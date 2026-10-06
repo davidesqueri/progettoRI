@@ -3,6 +3,7 @@
 extern int utentiConnessi;
 extern int mysock_lavagna; // mysock_lavagna è il socket di ascolto
 extern int max_des;
+extern int stdin_chiusa; // 1 = stdin a EOF, non più monitorato con select()
 extern char comando[256]; // buffer per il comando da terminale
 extern uint16_t ID_LAVAGNA;
 extern fd_set readfds; // set di descrittori da controllare per la lettura
@@ -21,6 +22,8 @@ struct utente_des {
     utente_t utente;
     // descrittore socket relativo all'utente
     int des;
+    int doing; // per indicare se l'utente ha già una card assegnata
+    int registrato; // 0 = TCP accettata ma HELLO non ancora ricevuto, 1 = utente registrato
     //puntatore al successivo utente
     struct utente_des*prox;
 };
@@ -71,9 +74,9 @@ void rimuovi_utente(struct utente_des*utente);
 
 /* @brief Crea una nuova card sulla base del messaggio ricevuto
  * manda all'utente 1 se l'ID inserito non è disponibile, 0 altrimenti
- * @param char* , struct utente_des*
+ * @param struct utente_des* è il puntatore all'utente dal quale socket leggere il messaggio
  */
-void crea_card(char*buf,struct utente_des*utente);
+void crea_card(utente_des_t*utente);
 
 /* @brief Controlla che l'ID fornito non sia già utilizzato da un'altra card
  * @return 0==ID disponibile, 1==ID non disponibile
@@ -87,6 +90,7 @@ int SEND_USER_LIST();
 
 /* @brief Manda la prima card in ToDo, e la lista di utenti connessi (meno il destinatario) a tutti gli utenti connessi.
  *
+ * Esegue anche SEND_USER_LIST
  */
 void AVAILABLE_CARD();
 
@@ -140,3 +144,42 @@ void ACK_CARD(utente_des_t*utente);
 * @return il puntatore (card_t*) al descrittore della card richiesta, NULL se non è stata trovata
  */
 card_t* trova_card(card_t*lista, uint32_t ID, card_t**prior);
+
+/* @brief Interpreta il comando CARD_DONE da parte di un utente
+ *
+ */
+void card_done(utente_des_t*utente);
+
+/* @brief Crea le card iniziali (almeno 10) in ToDo se la lavagna è vuota
+ *
+ * Chiamata all'avvio: la spec richiede almeno 10 card tutte in "To Do".
+ */
+void seed_carte_iniziali();
+
+/* @brief Gestisce il messaggio HELLO di un utente appena connesso
+ *
+ * Legge la porta dal socket, completa la registrazione (registrato=1,
+ * utentiConnessi++), risponde "OK" e valuta AVAILABLE_CARD.
+ * @param utente è il descrittore pendente (non ancora registrato)
+ */
+void gestisci_hello(utente_des_t*utente);
+
+/* @brief Gestisce il messaggio QUIT di un utente registrato
+ *
+ * Rimette in ToDo le sue card in Doing (per riassegnarle), poi lo rimuove.
+ * @param utente è il descrittore dell'utente che esce
+ */
+void gestisci_quit(utente_des_t*utente);
+
+/* @brief Controllo periodico PING_USER/PONG_LAVAGNA sulle card in Doing
+ *
+ * Per ogni card in Doing da più di PING_TIMEOUT_SEC invia PING_USER
+ * all'utente responsabile; se un PING è in attesa da più di
+ * PONG_TIMEOUT_SEC, rimette la card in ToDo (utente presunto disconnesso).
+ * Chiamata ad ogni ciclo del main loop (select con timeout).
+ */
+void controllo_ping();
+
+/* @brief Libera la memoria di una card (descrizione + struct)
+ */
+void libera_card(card_t*card);

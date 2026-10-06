@@ -17,17 +17,21 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEBUG 1 // 1=stampa messaggi di debug , 0=non stampa messaggi di debug
+#define DEBUG 0 // 1=stampa messaggi di debug , 0=non stampa messaggi di debug
 
 #define PORTA_LAVAGNA 5678
 
 #define LOCALHOST "127.0.0.1"
 
-#define BACKLOG 3
+#define BACKLOG 8
 
 #define DES_ATT_LEN 1024 // massimo numero di caratteri per la descrizione dell'attività
 
-#define NUMERO_COMANDI_DISPONIBILI 8
+// Timeout per PING_USER/PONG_LAVAGNA (secondi). Spec: Doing da >90s -> PING, 30s per il PONG.
+#define PING_TIMEOUT_SEC 90
+#define PONG_TIMEOUT_SEC 30
+
+#define NUMERO_COMANDI_DISPONIBILI 10
 #define MAX_LEN_COMANDO 14
 /////////
 /// comandi utente
@@ -40,6 +44,8 @@
 #define ID_SEND_USER_LIST 6
 #define ID_SHOW_LAVAGNA 7
 #define ID_AVAILABLE_CARD 8
+#define ID_PING_USER 9
+#define ID_PONG_LAVAGNA 10
 /////////
 
 ///////// typedef
@@ -59,10 +65,11 @@ typedef struct utente_des utente_des_t;
  */
 struct card {
     uint32_t ID;
-    //int colonna; // 0 1 2 : ToDo Doing Done
+    //int colonna; // 0 1 2 : ToDo Doing Done (implicita dalla lista di appartenenza)
     char *descrizione; // testo attività
     utente_t responsabile; // n. di porta dell'utente che la implementa o la ha implementata
     time_t timestampUltimaModifica;
+    time_t pingInviato; // 0 = nessun PING in attesa, altrimenti timestamp dell'ultimo PING_USER
     card_t*prox;
 };
 

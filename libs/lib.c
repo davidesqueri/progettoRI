@@ -5,7 +5,7 @@
 // 0=utente 1=lavagna
 // int selettore;
 
-const char *comandi[] = { // numero di comandi disponibili (NUMERO_COMANDI_CORRETTI in include/include.h)
+const char *comandi[] = { // numero di comandi disponibili (NUMERO_COMANDI_DISPONIBILI in include/include.h)
     "CREATE_CARD", // solo utente 1
     "HELLO", // solo utente 2
     "QUIT", // solo utente 3
@@ -13,7 +13,10 @@ const char *comandi[] = { // numero di comandi disponibili (NUMERO_COMANDI_CORRE
     "CARD_DONE", // solo utente 5
 
     "SEND_USER_LIST", // solo lavagna 6
-    "SHOW_LAVAGNA" // solo lavagna 7
+    "SHOW_LAVAGNA", // solo lavagna 7
+    "AVAILABLE_CARD", // solo lavagna 8
+    "PING_USER", // solo lavagna 9
+    "PONG_LAVAGNA" // solo utente 10
 
     // il comando più lungo è di 14 caratteri (tieni di conto in più di \n e \0)
     // MAX_LEN_COMANDO in include/include.h
