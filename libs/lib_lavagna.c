@@ -954,7 +954,6 @@ void seed_carte_iniziali() {
         c->responsabile = 0;
         c->timestampUltimaModifica = time(NULL);
         c->pingInviato = 0;
-        c->prox = NULL;
         inserimento_lista_card(&testaToDo, c);
     }
 }
