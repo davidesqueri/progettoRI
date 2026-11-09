@@ -1,1 +1,4 @@
-objects
+objects/
+AGENTS.md
+.cache
+.DS_Store
