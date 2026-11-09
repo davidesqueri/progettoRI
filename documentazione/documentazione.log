@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.3)  9 SEP 2026 22:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.3)  9 NOV 2026 19:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -114,7 +114,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 [1
 
 {/usr/local/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (74.68861pt too wide) in paragraph at lines 50--51
+Overfull \hbox (74.68861pt too wide) in paragraph at lines 51--52
 \OT1/cmr/m/n/10.95 Le card in \OT1/cmtt/m/n/10.95 Doing \OT1/cmr/m/n/10.95 da p
 i^^Ru di 90s ricevono \OT1/cmtt/m/n/10.95 [ID[]PING[]USER][ID[]card] \OT1/cmr/m
 /n/10.95 e l'utente risponde \OT1/cmtt/m/n/10.95 [ID[]PONG[]LAVAGNA][ID[]card]\
@@ -123,9 +123,9 @@ OT1/cmr/m/n/10.95 ;
 
 [1]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 58.
+(Font)              <10.95> on input line 65.
 
-Overfull \hbox (1.0253pt too wide) in paragraph at lines 72--73
+Overfull \hbox (1.0253pt too wide) in paragraph at lines 78--79
 \OT1/cmtt/m/n/10.95 ACK[]CARD \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 CARD[]DO
 NE \OT1/cmr/m/n/10.95 sono au-to-matici (vincita asta e fine la-voro); \OT1/cmt
 t/m/n/10.95 SEND[]USER[]LIST\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 AVAILABLE[
@@ -154,7 +154,7 @@ ype1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2026basic/texmf-dist/font
 s/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2026basic/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2026basic/texmf-di
 st/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on documentazione.pdf (3 pages, 94599 bytes).
+Output written on documentazione.pdf (3 pages, 95339 bytes).
 PDF statistics:
  49 PDF objects out of 1000 (max. 8388607)
  30 compressed objects within 1 object stream

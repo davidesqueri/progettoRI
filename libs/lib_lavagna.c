@@ -1056,8 +1056,8 @@ void gestisci_quit(utente_des_t*utente) {
 }
 
 void controllo_ping() {
-    // Spec: card in Doing da più di PING_TIMEOUT_SEC -> PING_USER;
-    // senza PONG entro PONG_TIMEOUT_SEC -> torna in ToDo.
+    // card in Doing da più di PING_TIMEOUT_SEC -> PING_USER
+    // senza PONG entro PONG_TIMEOUT_SEC -> torna in ToDo
     time_t ora = time(NULL);
     card_t *c = testaDoing;
     while (c != NULL) {

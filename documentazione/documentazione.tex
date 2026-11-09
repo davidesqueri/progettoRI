@@ -18,6 +18,7 @@
 \section*{Documentazione}
 \subsection*{Scelta del Protocollo di Trasporto}
 TCP per le comunicazioni Utente - Lavagna. La TCP handshake funziona da HELLO, o meglio il comando HELLO inizia la TCP handshake.
+UDP per le comunicazioni Utente - Utente, poichè le comunicazioni tra utenti sono sporadiche, così da risparmiare l'overhead della connessione TCP.
 \subsection*{Scelta del tipo di concorrenza per la Lavagna}
 Ho optato per rendere la lavagna iterativa (non concorrente) nel servire le connessioni con gli utenti poiché:
 \begin{enumerate}
@@ -54,12 +55,17 @@ Ho optato per non rendere bloccante l'assegnazione di una Card: l'asta UDP ha ti
 
 All'avvio la lavagna precarica 10 card in \texttt{ToDo} come richiesto dalle specifiche; la \texttt{QUIT} di un utente rimette le sue card \texttt{Doing} in \texttt{ToDo} per riassegnarle.
 
+Se all'interno di un'asta, un utente smette di rispondere, viene assunto disconnesso dagli altri utenti e l'asta continua.
+
+Utenti già impegnati con una card in Doing non partecipano alle aste.
+
+Ho scelto come range di tempo necessario per card [1 ; 100] secondi, possono sembrare lunghi ma serve che qualche card richieda più di 90 secondi altrimenti non è verificabile il funzionamento di PING e PONG.
+
 \section*{Comandi disponibili}
 Avvio: \texttt{./lavagna} (nessun argomento, porta 5678) e \texttt{./utente <porta>} (porta $\geq$ 5679).
 \subsection*{Lavagna (da terminale)}
 \begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}
     \item \texttt{SHOW\_LAVAGNA}: ristampa la lavagna con colonne e dettaglio card.
-    \item \texttt{SEND\_USER\_LIST}: ritrasmette agli utenti registrati la lista delle porte.
     \item \texttt{QUIT}: termina la lavagna.
 \end{itemize}
 Gli altri comandi digitati sulla lavagna rispondono ``non disponibile'': \texttt{ACK\_CARD}, \texttt{CARD\_DONE} e \texttt{MOVE\_CARD} avvengono in automatico alla ricezione dei messaggi degli utenti.

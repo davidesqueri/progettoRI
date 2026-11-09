@@ -327,12 +327,34 @@ void CHOOSE_USER(card_t*card) {
         // Invio ACK_CARD alla lavagna (tcp)
         ACK_CARD(card);
 
+        /// MODIFICA TEMPORANEA [[
+        //int tempo_lavoro = 1 + rando()%100;
+        int tempo_lavoro = 60;
+        /// ]]
+        printf("Durata Lavoro Card: %i secondi\n", tempo_lavoro);
         printf("Lavorando sulla carta...\n");
-        sleep(1 + rando()%6); // almeno 1s di lavoro
+
+        for (int i = tempo_lavoro; i > 0; i--) {
+            // controlla ping lavagna
+            // 1. controllo se ci siano messaggi dalla lavagna
+            ssize_t bytes = recv(mysock_utente, NULL, 10, MSG_PEEK | MSG_DONTWAIT);
+            if (bytes > 0) {
+                // gestisco il messaggio della lavagna
+                gestisci_messaggio_lavagna();
+            }
+            else if (bytes == 0) {
+                printf("\nLa lavagna ha chiuso la connessione, disconnessione...\n");
+                QUIT();
+            }
+            // torno a gestire la card
+            printf("\rTempo rimanente: %3d secondi",i);
+            fflush(stdout);
+            sleep(1);
+        }
 
         // 6. Ho finito
         CARD_DONE(card);
-        printf("Lavoro terminato!\n");
+        printf("\rLavoro terminato!             \n");
     }
     else {
         printf("Ha vinto l'utente %u con costo %u. Mi rimetto in attesa.\n", vincitore, min_costo);
