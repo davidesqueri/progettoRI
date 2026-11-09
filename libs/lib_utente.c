@@ -82,14 +82,16 @@ void QUIT () {
 }
 
 void PONG_LAVAGNA(uint32_t id_card) {
+    if (DEBUG) {
+        printf("PONG_LAVAGNA\n");
+    }
     // Wire PONG: [ID_PONG_LAVAGNA][ID_card]
     uint32_t msg[2] = {htonl(ID_PONG_LAVAGNA), htonl(id_card)};
     if (send(mysock_utente, msg, sizeof(msg), 0) < 0) {
         perror("PONG_LAVAGNA: errore send:");
+        QUIT();
     }
-    else if (DEBUG) {
-        printf("PONG inviato per card %u.\n", id_card);
-    }
+    printf("PONG inviato per card %u.\n", id_card);
 }
 
 void CREATE_CARD() {
@@ -327,17 +329,15 @@ void CHOOSE_USER(card_t*card) {
         // Invio ACK_CARD alla lavagna (tcp)
         ACK_CARD(card);
 
-        /// MODIFICA TEMPORANEA [[
-        //int tempo_lavoro = 1 + rando()%100;
-        int tempo_lavoro = 60;
-        /// ]]
+        int tempo_lavoro = 1 + rando()%100;
         printf("Durata Lavoro Card: %i secondi\n", tempo_lavoro);
         printf("Lavorando sulla carta...\n");
 
         for (int i = tempo_lavoro; i > 0; i--) {
             // controlla ping lavagna
             // 1. controllo se ci siano messaggi dalla lavagna
-            ssize_t bytes = recv(mysock_utente, NULL, 10, MSG_PEEK | MSG_DONTWAIT);
+            char peek[16];
+            ssize_t bytes = recv(mysock_utente, (void*)peek, 1, MSG_PEEK | MSG_DONTWAIT);
             if (bytes > 0) {
                 // gestisco il messaggio della lavagna
                 gestisci_messaggio_lavagna();
@@ -486,7 +486,7 @@ void gestisci_messaggio_lavagna() {
             break;
         }
         case ID_PING_USER: {
-            printf("Ricezione PING dalla lavagna.\n");
+            printf("\nRicezione PING dalla lavagna.\n");
             uint32_t net_id = 0;
             if (recv_fisso(mysock_utente, &net_id, sizeof(uint32_t)) <= 0) {
                 printf("Terminazione della lavagna. Chiusura.\n");

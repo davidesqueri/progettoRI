@@ -28,8 +28,8 @@
 #define DES_ATT_LEN 1024 // massimo numero di caratteri per la descrizione dell'attività
 
 // Timeout per PING_USER/PONG_LAVAGNA (secondi). Spec: Doing da >90s -> PING, 30s per il PONG.
-#define PING_TIMEOUT_SEC 30 // deve essere 90 TEMPORANEO
-#define PONG_TIMEOUT_SEC 10 // deve essere 30 TEMPORANEO
+#define PING_TIMEOUT_SEC 90 // deve essere 90
+#define PONG_TIMEOUT_SEC 30 // deve essere 30
 
 #define NUMERO_COMANDI_DISPONIBILI 10
 #define MAX_LEN_COMANDO 14
