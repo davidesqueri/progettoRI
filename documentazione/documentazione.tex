@@ -27,9 +27,9 @@ Ho optato per rendere la lavagna iterativa (non concorrente) nel servire le conn
     \item non serve concorrenza perché la lavagna esegue solo operazioni I/O bound leggere
 \end{enumerate}
 Tengo traccia degli utenti con una lista senza limite massimo; con un solo thread multiplexo con \texttt{select()} stdin, nuove connessioni ed esistenti, servendoli in quest'ordine. Ogni scambio utente-lavagna deve quindi essere botta-e-risposta senza input intermedio, altrimenti la lavagna resterebbe bloccata su un utente: per esempio l'esito della \texttt{CREATE\_CARD} (ID duplicato o no) arriva solo dopo l'invio completo, e scomporlo in pi\`u fasi aumenterebbe le \texttt{send}/\texttt{recv}.
-
+Questo approccio tuttavia ovviamente non scala bene quanto un approccio multithread/multiprocess, ma per i numeri di utenti richiesti dalle specifiche non da problemi.
 \subsection*{Struttura dei pacchetti e modalità di scambio dei Dati}
-Per quanto riguarda le comunicazioni utente - lavagna, avendo optato per chiudere gli scambi di informazioni in al più un messaggio da parte dell'utente uno da parte della lavagna, ho la necessità di inviare più informazioni, anche di natura diversa in una stessa \texttt{send()}.
+Per quanto riguarda le comunicazioni utente - lavagna, avendo optato per chiudere gli scambi di informazioni in al più un messaggio da parte dell'utente uno da parte della lavagna, ho la necessità di inviare più informazioni—anche di natura diversa—in una stessa \texttt{send()}.
 
 Ho deciso che i primi 4 byte di ogni messaggio sono l'ID del comando (\texttt{uint32\_t}), in base a quello la lavagna (o l'utente) sa come interpretare il resto del messaggio. Per esempio la \texttt{CREATE\_CARD} invia un messaggio costruito come segue:
 \begin{verbatim}

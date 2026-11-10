@@ -15,9 +15,9 @@ extern int stdin_chiuso; // 1 = stdin a EOF, non più monitorato con select()
 uint32_t rando();
 
 /*
- * @brief Comunica alla lavagna la card che gli è stata assegnata
+ * @brief L'utente comunica alla lavagna che gli è stata assegnata la card, la lavagna conferma
  *
- * @param
+ * @param card la card che gli è stata assegnata
  */
 void ACK_CARD(card_t*card);
 
