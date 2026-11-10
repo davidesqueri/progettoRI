@@ -1,5 +1,14 @@
-# compiler
-CC = clang
+# Detect Operating System per scegliere compilatore
+UNAME_S := $(shell uname -s)
+
+# Compiler selection based on OS
+ifeq ($(UNAME_S),Darwin)
+    CC = clang
+else
+    CC = gcc
+endif
+
+# compiler flags
 CFLAGS = -g -Wall -I$(INCLUDEPATH) -xc
 LDFLAGS =
 

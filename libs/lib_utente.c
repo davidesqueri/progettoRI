@@ -410,9 +410,11 @@ int rileva_input () {
     FD_ZERO(&readfds);
 
     // aggiungo il descrittore del socket connesso alla lavagna
-    FD_SET(mysock_utente, &readfds);
-    if (mysock_utente > max_des) {
-        max_des = mysock_utente;
+    if (connesso) {
+        FD_SET(mysock_utente, &readfds);
+        if (mysock_utente > max_des) {
+            max_des = mysock_utente;
+        }
     }
 
     // aggiungo il descrittore di stdin (salvo EOF già rilevato: un fd a EOF
