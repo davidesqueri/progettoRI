@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.3)  9 NOV 2026 20:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.3)  10 NOV 2026 14:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -8,8 +8,8 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (/usr/local/texlive/2026basic/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
-(/usr/local/texlive/2026basic/texmf-dist/tex/latex/base/size11.clo
-File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+(/usr/local/texlive/2026basic/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 )
 \c@part=\count275
 \c@section=\count276
@@ -90,12 +90,12 @@ LaTeX Font Info:    ... okay on input line 15.
 * \topmargin=-47.84006pt
 * \headheight=12.0pt
 * \headsep=25.0pt
-* \topskip=11.0pt
+* \topskip=10.0pt
 * \footskip=30.0pt
-* \marginparwidth=50.0pt
-* \marginparsep=10.0pt
+* \marginparwidth=57.0pt
+* \marginparsep=11.0pt
 * \columnsep=10.0pt
-* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
 * \hoffset=0.0pt
 * \voffset=0.0pt
 * \mag=1000
@@ -105,31 +105,26 @@ LaTeX Font Info:    ... okay on input line 15.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 16.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 16.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 16.
+
+Overfull \hbox (27.02983pt too wide) in paragraph at lines 55--59
+\OT1/cmr/m/n/10 Le card in \OT1/cmtt/m/n/10 Doing \OT1/cmr/m/n/10 da pi^^Ru di 
+90s ricevono \OT1/cmtt/m/n/10 [ID[]PING[]USER][ID[]card] \OT1/cmr/m/n/10 e l'ut
+ente risponde \OT1/cmtt/m/n/10 [ID[]PONG[]LAVAGNA][ID[]card]\OT1/cmr/m/n/10 ;
+ []
+
 [1
 
 {/usr/local/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (74.68861pt too wide) in paragraph at lines 51--52
-\OT1/cmr/m/n/10.95 Le card in \OT1/cmtt/m/n/10.95 Doing \OT1/cmr/m/n/10.95 da p
-i^^Ru di 90s ricevono \OT1/cmtt/m/n/10.95 [ID[]PING[]USER][ID[]card] \OT1/cmr/m
-/n/10.95 e l'utente risponde \OT1/cmtt/m/n/10.95 [ID[]PONG[]LAVAGNA][ID[]card]\
-OT1/cmr/m/n/10.95 ;
- []
-
-[1]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 65.
+(Font)              <7> on input line 74.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 74.
 
-Overfull \hbox (1.0253pt too wide) in paragraph at lines 78--79
-\OT1/cmtt/m/n/10.95 ACK[]CARD \OT1/cmr/m/n/10.95 e \OT1/cmtt/m/n/10.95 CARD[]DO
-NE \OT1/cmr/m/n/10.95 sono au-to-matici (vincita asta e fine la-voro); \OT1/cmt
-t/m/n/10.95 SEND[]USER[]LIST\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 AVAILABLE[
-]CARD\OT1/cmr/m/n/10.95 ,
+Overfull \hbox (7.75914pt too wide) in paragraph at lines 88--89
+\OT1/cmtt/m/n/10 ACK[]CARD \OT1/cmr/m/n/10 e \OT1/cmtt/m/n/10 CARD[]DONE \OT1/c
+mr/m/n/10 sono au-to-matici (vincita asta e fine la-voro); \OT1/cmtt/m/n/10 SEN
+D[]USER[]LIST\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 AVAILABLE[]CARD\OT1/cmr/m/n/10 
+, \OT1/cmtt/m/n/10 PING[]USER
  []
 
 [2] (./documentazione.aux)
@@ -139,25 +134,23 @@ L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 1080 strings out of 469006
- 18222 string characters out of 5454814
- 444756 words of memory out of 5000000
- 29830 multiletter control sequences out of 15000+600000
- 633093 words of font info for 58 fonts, out of 8000000 for 9000
+ 1052 strings out of 469006
+ 17786 string characters out of 5454814
+ 445756 words of memory out of 5000000
+ 29810 multiletter control sequences out of 15000+600000
+ 629434 words of font info for 46 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 57i,6n,65p,652b,190s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,5n,65p,652b,164s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </Users/davidesqueri/Library/texlive/2026basic/texmf-var/fonts/pk/ljfour/jkn
-appen/ec/tcrm1095.600pk></usr/local/texlive/2026basic/texmf-dist/fonts/type1/pu
+appen/ec/tcrm1000.600pk></usr/local/texlive/2026basic/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type
 1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2026basic/texmf-dist/font
-s/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2026basic/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2026basic/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on documentazione.pdf (3 pages, 95748 bytes).
+ype1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2026basic/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on documentazione.pdf (2 pages, 72990 bytes).
 PDF statistics:
- 49 PDF objects out of 1000 (max. 8388607)
- 30 compressed objects within 1 object stream
+ 36 PDF objects out of 1000 (max. 8388607)
+ 22 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

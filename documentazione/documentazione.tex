@@ -1,5 +1,5 @@
 % preamble:
-\documentclass[11pt,a4paper, titlepage]{article}
+\documentclass[10pt,a4paper, titlepage]{article}
 \usepackage[a4paper, margin=0.85in]{geometry}  % Adjust margin size
 % \usepackage{amsmath}
 % \usepackage{graphicx}
@@ -13,12 +13,14 @@
 
 % document
 \begin{document}
-\maketitle
+
 
 \section*{Documentazione}
 \subsection*{Scelta del Protocollo di Trasporto}
 TCP per le comunicazioni Utente - Lavagna. La TCP handshake funziona da HELLO, o meglio il comando HELLO inizia la TCP handshake.
 UDP per le comunicazioni Utente - Utente, poichè le comunicazioni tra utenti sono sporadiche, così da risparmiare l'overhead della connessione TCP.
+Se un messaggio UDP non arriva a destinazione, durante la scelta dell'utente per la card, l'utente viene escluso dal round di assegnazione;
+se più utenti si nominano alla lavagna per l'assegnazione, la lavagna gestisce la corsa con disciplina FIFO, rischiando di non assegnare la card in maniera ottima.
 \subsection*{Scelta del tipo di concorrenza per la Lavagna}
 Ho optato per rendere la lavagna iterativa (non concorrente) nel servire le connessioni con gli utenti poiché:
 \begin{enumerate}
@@ -42,27 +44,35 @@ max1024byte: descrizione_attività
 \end{verbatim}
 Il campo lunghezza permette al ricevente di sapere esattamente quanti byte leggere (letture in ciclo fino a esaurimento). La \texttt{HELLO} \`e \texttt{[ID\_HELLO][porta\_utente]} con risposta \texttt{"OK"}/\texttt{"NO"}; la \texttt{QUIT} \`e il solo ID comando. La \texttt{AVAILABLE\_CARD} arriva dopo una \texttt{SEND\_USER\_LIST} per-recipient (lista degli altri idonei + conteggio), poi \texttt{[ID\_AVAILABLE\_CARD][len][ID\_card][descrizione]}. L'asta \texttt{CHOOSE\_USER} viaggia su UDP con pacchetti \texttt{[ID\_card][porta][costo]}: l'ID card scarta i pacchetti stantii delle aste precedenti.
 
-I numeri sono portati in endianess di rete prima di essere inviati, e riportati in endianess di sistema all'arrivo.
+I numeri sono portati in endianess di rete prima di essere inviati e riportati in endianess di sistema all'arrivo (\texttt{htonl}/\texttt{ntohl}). Al costo di maggiore verbosità del codice otteniamo correttezza su architettura con diversa endianess.
+
+La descrizione dell'attività ha lunghezza massima fissa (\texttt{DES\_ATT\_LEN}=1024 byte): delimita la memoria e semplifica la validazione, ma tronca i testi più lunghi.
 
 \subsection*{Gestione dei socket}
-La lavagna usa un socket TCP di ascolto e uno slot per utente, tutti multiplexati con \texttt{select()} a timeout di 1s assieme a stdin: accetta connessioni, serve tutti i descrittori pronti (senza affamarne alcuno) ed esegue il controllo periodico dei PING. Ogni utente ha un socket TCP verso la lavagna e un socket UDP verso i pari per l'asta.
+La lavagna usa un socket TCP di ascolto e uno slot per utente, tutti multiplexati con \texttt{select()} a timeout di 1s assieme a stdin: accetta connessioni, serve tutti i descrittori pronti ed esegue il controllo periodico dei PING. Ogni utente ha un socket TCP verso la lavagna e un socket UDP verso i pari per l'asta.
 
 \subsection*{PING\_USER e PONG\_LAVAGNA}
-Le card in \texttt{Doing} da pi\`u di 90s ricevono \texttt{[ID\_PING\_USER][ID\_card]} e l'utente risponde \texttt{[ID\_PONG\_LAVAGNA][ID\_card]}; senza PONG entro 30s la card torna in \texttt{ToDo} (soglie in \texttt{include.h}). Pregio: nessun thread dedicato, solo il ciclo \texttt{select()}. Difetto: controllo O(n) a ogni ciclo e risposta differita se l'utente \`e in asta (comunque entro i 30s).
+Le card in \texttt{Doing} da pi\`u di 90s ricevono \texttt{[ID\_PING\_USER][ID\_card]} e l'utente risponde \texttt{[ID\_PONG\_LAVAGNA][ID\_card]};
+senza PONG entro 30s la card torna in \texttt{ToDo} (queste costanti sono definite in \texttt{include.h} e i valori sono presi dalle specifiche).
+Un utente che sta eseguendo una card si sveglia periodicamente (ogni secondo) per controllare l'arrivo di eventuali Ping a cui deve rispondere e modificare il tempo rimanente mostrato a video.
+Questa implementazione però richiede dalla Lavagna un controllo O(n) su tutte le card in doing ad ogni ciclo.
 
 \section*{Scelte Varie}
 Ho optato per non rendere bloccante l'assegnazione di una Card: l'asta UDP ha timeout di 10s e ignora i pacchetti delle aste precedenti, cos\`i un utente che esce a met\`a asta non blocca gli altri.
 
+Ogni pacchetto \texttt{CHOOSE\_USER} porta l'ID della card in asta: un pacchetto di un'asta precedente, arrivato in ritardo, viene riconosciuto e scartato senza contaminare il conteggio dei costi dell'asta corrente.
+
 All'avvio la lavagna precarica 10 card in \texttt{ToDo} come richiesto dalle specifiche; la \texttt{QUIT} di un utente rimette le sue card \texttt{Doing} in \texttt{ToDo} per riassegnarle.
 
-Se all'interno di un'asta, un utente smette di rispondere, viene assunto disconnesso dagli altri utenti e l'asta continua.
+Se all'interno di un'asta un utente smette di rispondere, gli altri decidono con i soli voti ricevuti entro il timeout (10s) e l'asta prosegue: evita che un peer cada in blocco, ma su voti incompleti la card può essere assegnata a chi non ha davvero il costo minimo.
 
-Utenti già impegnati con una card in Doing non partecipano alle aste.
+Utenti già impegnati con una card in Doing non partecipano alle aste: nessun utente può così accumulare più card in parallelo. Pregio: invariante semplice (una card per utente). Difetto: con due soli utenti, se uno è impegnato, le card in ToDo restano ferme finché quello non termina.
 
 Ho scelto come range di tempo necessario per card [1 ; 100] secondi, possono sembrare lunghi ma serve che qualche card richieda più di 90 secondi altrimenti non è verificabile il funzionamento di PING e PONG.
 
 \section*{Comandi disponibili}
 Avvio: \texttt{./lavagna} (nessun argomento, porta 5678) e \texttt{./utente <porta>} (porta $\geq$ 5679).
+Quando viene inserito un comando, se questo necessita di ulteriori campi successivamente, essi vengono richiesti iterativamente.
 \subsection*{Lavagna (da terminale)}
 \begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}
     \item \texttt{SHOW\_LAVAGNA}: ristampa la lavagna con colonne e dettaglio card.
