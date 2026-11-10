@@ -1,5 +1,14 @@
-# compiler
-CC = clang
+# Detect Operating System per scegliere compilatore
+UNAME_S := $(shell uname -s)
+
+# Compiler selection based on OS
+ifeq ($(UNAME_S),Darwin)
+    CC = clang
+else
+    CC = gcc
+endif
+
+# compiler flags
 CFLAGS = -g -Wall -I$(INCLUDEPATH) -xc
 LDFLAGS =
 
@@ -24,6 +33,8 @@ UTENTE_EXECUTABLE_NAME  = utente
 $(OBJPATH)/lavagna.o: include/include.h include/include_lavagna.h libs/lib_lavagna.c libs/lib.c
 $(OBJPATH)/utente.o:  include/include.h include/include_utente.h libs/lib_utente.c libs/lib.c
 $(OBJPATH)/libs/lib.o: include/include.h
+$(OBJPATH)/libs/lib_lavagna.o: include/include.h include/include_lavagna.h
+$(OBJPATH)/libs/lib_utente.o:  include/include.h include/include_utente.h
 
 # build both
 all: $(LAVAGNA_EXECUTABLE_NAME) $(UTENTE_EXECUTABLE_NAME)

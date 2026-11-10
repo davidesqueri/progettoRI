@@ -3,24 +3,30 @@
 extern int connesso; // 0=non connesso alla lavagna , 1=connesso alla lavagna
 extern int mysock_utente; // socket connesso alla lavagna
 
+extern int mysock_udp;
+
+extern int my_port;
+
+extern int stdin_chiuso; // 1 = stdin a EOF, non più monitorato con select()
+
 /* @brief Generare un numero randomico secondo le specifiche fornite
  *
  */
-int rando();
+uint32_t rando();
 
 /*
- * @brief Comunica alla lavagna la card che gli è stata assegnata
+ * @brief L'utente comunica alla lavagna che gli è stata assegnata la card, la lavagna conferma
  *
- * @param
+ * @param card la card che gli è stata assegnata
  */
-void ACK_CARD();
+void ACK_CARD(card_t*card);
 
 /*
  * @brief Comunica alla lavagna la terminazione dell'attività assegnata
  *
  * @param
  */
-void CARD_DONE();
+void CARD_DONE(card_t*card);
 
 /*
  * @brief Comunico alla lavagna una nuova carta
@@ -39,11 +45,11 @@ void CREATE_CARD();
 void QUIT ();
 
 /*
- * @brief Risponde al PING_UTENTE
+ * @brief Risponde al PING_USER della lavagna con PONG_LAVAGNA
  *
- * @param
+ * @param id_card è l'ID della card per cui è arrivato il PING
  */
-void PONG_LAVAGNA();
+void PONG_LAVAGNA(uint32_t id_card);
 
 /*
  * @brief Assegnamento della carta discussa tramite consenso
@@ -52,7 +58,7 @@ void PONG_LAVAGNA();
  *
  * @param
  */
-void CHOOSE_USER();
+void CHOOSE_USER(card_t*card);
 
 /*
  * @brief La lavagna sposta la card nella colonna corretta
@@ -88,13 +94,6 @@ int rileva_input();
  */
 void gestisci_messaggio_lavagna();
 
-/* @brief Si occupa di mandare un messaggio precostruito alla lavagna
- * @param comando è l'id del comando da mandare alla lavagna
- * @param buf è il puntatore al buffer da inviare
- * @param length è la lunghezza del buffer (NON del messaggio finale)
- */
-void manda_comando_lavagna(int comando, const char* buf, const size_t length);
-
 /* @brief Riceve dal socket indicato il numero di byte specificati e li inserisce in @ref buf
  *
  * È bloccante.
@@ -102,3 +101,15 @@ void manda_comando_lavagna(int comando, const char* buf, const size_t length);
  * @return il numero di byte letti, ovvero len, ritorna 0 se la lavagna ha chiuso il socket, -1 se vi è stato un errore di rete
  */
 ssize_t recv_all(int sockfd, void *buf, size_t len);
+
+/* @brief Gestisce un messaggio da parte della lavagna del tipo AVAILABLE_CARD
+ *
+ * salva la card e le associa una matrice
+ */
+void receive_available_card();
+
+/* @brief Gestisce un messaggio da parte della lavagna del tipo SEND_USER_LIST
+ *
+ * Salva la lista degli utenti
+ */
+void receive_user_list();
