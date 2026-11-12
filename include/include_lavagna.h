@@ -24,6 +24,7 @@ struct utente_des {
     int des;
     int doing; // per indicare se l'utente ha già una card assegnata
     int registrato; // 0 = TCP accettata ma HELLO non ancora ricevuto, 1 = utente registrato
+    int occupato; // 1 = temporaneamente occupato (es. CREATE_CARD da terminale), escluso dalle aste
     //puntatore al successivo utente
     struct utente_des*prox;
 };
@@ -82,6 +83,11 @@ void crea_card(utente_des_t*utente);
  * @return 0==ID disponibile, 1==ID non disponibile
  */
 int check_id_card(uint32_t ID);
+
+/* @brief Conta gli utenti idonei a ricevere una card (registrati, non in Doing, non occupati)
+ * @return il numero di utenti idonei
+ */
+int conta_idonei(void);
 
 /* @brief La lavagna manda la lista delle porte utilizzate (gli utenti connessi) agli utenti.
  * @return -1 se non ci sono utenti connessi, -2 se la comunicazione è fallita, 0 se va tutto bene

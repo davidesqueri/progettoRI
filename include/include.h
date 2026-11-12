@@ -47,6 +47,11 @@
 #define ID_AVAILABLE_CARD 8
 #define ID_PING_USER 9
 #define ID_PONG_LAVAGNA 10
+/// comandi di stato (solo protocollo, non digitabili): l'utente segnala alla
+/// lavagna di essere temporaneamente occupato (input da terminale) e di nuovo
+/// disponibile, per essere escluso/incluso nelle liste dei peer per le aste
+#define ID_BUSY 11
+#define ID_IDLE 12
 /////////
 
 ///////// typedef

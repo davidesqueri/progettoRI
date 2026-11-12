@@ -146,6 +146,7 @@ void accetta_utente() {
     nuovo_utente->prox = NULL; // è l'ultimo elemento nella lista
     nuovo_utente->doing = 0;
     nuovo_utente->registrato = 0;
+    nuovo_utente->occupato = 0;
 
     if (DEBUG) {
         printf("nuova connessione TCP in attesa di HELLO (sock %d)\n", utente_sock);
@@ -320,6 +321,26 @@ void gestisci_messaggio_utente() {
                 }
                 case ID_QUIT: {
                     gestisci_quit(attuale);
+                    break;
+                }
+                case ID_BUSY: {
+                    // l'utente è temporaneamente occupato (es. input da
+                    // terminale): escluso dalle aste finché non invia ID_IDLE
+                    if (attuale->registrato) {
+                        attuale->occupato = 1;
+                    }
+                    break;
+                }
+                case ID_IDLE: {
+                    // l'utente è di nuovo disponibile per le aste
+                    if (attuale->registrato) {
+                        attuale->occupato = 0;
+                    }
+                    // un utente tornato disponibile può sbloccare un'asta
+                    // rimasta ferma mentre era occupato
+                    if (testaToDo) {
+                        AVAILABLE_CARD();
+                    }
                     break;
                 }
                 case ID_CREATE_CARD: {
@@ -506,7 +527,7 @@ void crea_card(utente_des_t*utente) {
     (void)send(utente->des, "0", 1, 0);
     SHOW_LAVAGNA();
     // Una nuova card in ToDo può far scattare AVAILABLE_CARD
-    if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
+    if (testaToDo && conta_idonei() > 1) {
         AVAILABLE_CARD();
     }
 }
@@ -570,6 +591,19 @@ int check_id_card(uint32_t ID) {
     return 0;
 }
 
+/* @brief Conta gli utenti idonei a ricevere una card: registrati, non in
+ * Doing e non temporaneamente occupati. Unica fonte di verità per l'idoneità.
+ */
+int conta_idonei(void) {
+    int n = 0;
+    for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+        if (u->registrato && !u->doing && !u->occupato) {
+            n++;
+        }
+    }
+    return n;
+}
+
 int SEND_USER_LIST() {
     // controllo se ci sono utenti connessi (registrati)
     if (!utentiConnessi) {
@@ -577,10 +611,10 @@ int SEND_USER_LIST() {
         return -1;
     }
 
-    // lista dei registrati non in Doing (idonei a ricevere una card)
+    // lista dei registrati non in Doing e non occupati (idonei a ricevere una card)
     int idonei = 0;
     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
-        if (u->registrato && !u->doing) {
+        if (u->registrato && !u->doing && !u->occupato) {
             idonei++;
         }
     }
@@ -601,14 +635,14 @@ int SEND_USER_LIST() {
     }
     int i = 0;
     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
-        if (u->registrato && !u->doing) {
+        if (u->registrato && !u->doing && !u->occupato) {
             utenti[i++] = u->utente;
         }
     }
 
     int rc = 0;
     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
-        if (!u->registrato) {
+        if (!u->registrato || u->occupato) {
             continue;
         }
         // mando comando e dimensione matrice
@@ -633,7 +667,7 @@ void AVAILABLE_CARD() {
     // Spec (matricola pari): solo con almeno due utenti registrati idonei
     int idonei = 0;
     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
-        if (u->registrato && !u->doing) {
+        if (u->registrato && !u->doing && !u->occupato) {
             idonei++;
         }
     }
@@ -683,7 +717,7 @@ void AVAILABLE_CARD() {
     // Per ogni destinatario: prima la sua SEND_USER_LIST (lista degli altri
     // idonei + conteggio totale, come da spec), poi la card.
     for (utente_des_t *lavoro = testa_des_utente; lavoro != NULL; lavoro = lavoro->prox) {
-        if (!lavoro->registrato || lavoro->doing) {
+        if (!lavoro->registrato || lavoro->doing || lavoro->occupato) {
             continue;
         }
         // lista degli altri idonei (escluso il destinatario)
@@ -697,7 +731,7 @@ void AVAILABLE_CARD() {
             }
             int k = 0;
             for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
-                if (u->registrato && !u->doing && u != lavoro) {
+                if (u->registrato && !u->doing && !u->occupato && u != lavoro) {
                     mat[k++] = u->utente;
                 }
             }
@@ -851,7 +885,7 @@ void ACK_CARD(utente_des_t*utente) {
 
     attesa_ack = 0;
     SHOW_LAVAGNA();
-    if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
+    if (testaToDo && conta_idonei() > 1) {
         // ci sono altre card in todo, le invio
         AVAILABLE_CARD();
     }
@@ -906,7 +940,7 @@ void card_done(utente_des_t*utente) {
     }
 
     SHOW_LAVAGNA();
-    if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
+    if (testaToDo && conta_idonei() > 1) {
         // ci sono altre card in todo, le invio
         AVAILABLE_CARD();
     }
@@ -1032,7 +1066,7 @@ void gestisci_quit(utente_des_t*utente) {
     // Se restano meno di 2 idonei, le pending non sono più assegnabili: tornano in ToDo
     int idonei = 0;
     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
-        if (u->registrato && !u->doing && u != utente) {
+        if (u->registrato && !u->doing && !u->occupato && u != utente) {
             idonei++;
         }
     }

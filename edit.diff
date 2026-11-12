@@ -1,150 +1,516 @@
-diff --git a/Makefile b/Makefile
-index 64cfb1b..322659a 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,6 +1,9 @@
- # Detect Operating System per scegliere compilatore
- UNAME_S := $(shell uname -s)
+diff --git a/documentazione/documentazione.aux b/documentazione/documentazione.aux
+index d490c35..a79beaf 100644
+--- a/documentazione/documentazione.aux
++++ b/documentazione/documentazione.aux
+@@ -1,2 +1,2 @@
+ \relax 
+-\gdef \@abspage@last{2}
++\gdef \@abspage@last{3}
+diff --git a/documentazione/documentazione.log b/documentazione/documentazione.log
+index 68785c6..396901d 100644
+--- a/documentazione/documentazione.log
++++ b/documentazione/documentazione.log
+@@ -1,4 +1,4 @@
+-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.3)  10 NOV 2026 14:24
++This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.3)  12 NOV 2026 11:21
+ entering extended mode
+  restricted \write18 enabled.
+  %&-line parsing enabled.
+@@ -116,18 +116,18 @@ ente risponde \OT1/cmtt/m/n/10 [ID[]PONG[]LAVAGNA][ID[]card]\OT1/cmr/m/n/10 ;
  
-+# `make` senza argomenti equivale a `make all`
-+.DEFAULT_GOAL := all
+ {/usr/local/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+ LaTeX Font Info:    External font `cmex10' loaded for size
+-(Font)              <7> on input line 74.
++(Font)              <7> on input line 76.
+ LaTeX Font Info:    External font `cmex10' loaded for size
+-(Font)              <5> on input line 74.
++(Font)              <5> on input line 76.
+ 
+-Overfull \hbox (7.75914pt too wide) in paragraph at lines 88--89
++Overfull \hbox (7.75914pt too wide) in paragraph at lines 90--91
+ \OT1/cmtt/m/n/10 ACK[]CARD \OT1/cmr/m/n/10 e \OT1/cmtt/m/n/10 CARD[]DONE \OT1/c
+ mr/m/n/10 sono au-to-matici (vincita asta e fine la-voro); \OT1/cmtt/m/n/10 SEN
+ D[]USER[]LIST\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 AVAILABLE[]CARD\OT1/cmr/m/n/10 
+ , \OT1/cmtt/m/n/10 PING[]USER
+  []
+ 
+-[2] (./documentazione.aux)
++[2] [3] (./documentazione.aux)
+  ***********
+ LaTeX2e <2025-11-01>
+ L3 programming layer <2026-01-19>
+@@ -136,21 +136,21 @@ L3 programming layer <2026-01-19>
+ Here is how much of TeX's memory you used:
+  1052 strings out of 469006
+  17786 string characters out of 5454814
+- 445756 words of memory out of 5000000
++ 446756 words of memory out of 5000000
+  29810 multiletter control sequences out of 15000+600000
+  629434 words of font info for 46 fonts, out of 8000000 for 9000
+  319 hyphenation exceptions out of 8191
+- 57i,5n,65p,652b,164s stack positions out of 10000i,1000n,20000p,200000b,200000s
++ 57i,5n,65p,652b,328s stack positions out of 10000i,1000n,20000p,200000b,200000s
+  </Users/davidesqueri/Library/texlive/2026basic/texmf-var/fonts/pk/ljfour/jkn
+ appen/ec/tcrm1000.600pk></usr/local/texlive/2026basic/texmf-dist/fonts/type1/pu
+ blic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type
+ 1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/t
+ ype1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2026basic/texmf-dist/fon
+ ts/type1/public/amsfonts/cm/cmtt10.pfb>
+-Output written on documentazione.pdf (2 pages, 72990 bytes).
++Output written on documentazione.pdf (3 pages, 73948 bytes).
+ PDF statistics:
+- 36 PDF objects out of 1000 (max. 8388607)
+- 22 compressed objects within 1 object stream
++ 39 PDF objects out of 1000 (max. 8388607)
++ 24 compressed objects within 1 object stream
+  0 named destinations out of 1000 (max. 500000)
+  1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 
+diff --git a/documentazione/documentazione.tex b/documentazione/documentazione.tex
+index 3335e87..b25e1e6 100644
+--- a/documentazione/documentazione.tex
++++ b/documentazione/documentazione.tex
+@@ -68,6 +68,8 @@ Se all'interno di un'asta un utente smette di rispondere, gli altri decidono con
+ 
+ Utenti già impegnati con una card in Doing non partecipano alle aste: nessun utente può così accumulare più card in parallelo. Pregio: invariante semplice (una card per utente). Difetto: con due soli utenti, se uno è impegnato, le card in ToDo restano ferme finché quello non termina.
+ 
++Durante la digitazione dei campi di una \texttt{CREATE\_CARD} l'utente notifica alla lavagna di essere temporaneamente occupato (\texttt{ID\_BUSY}/\texttt{ID\_IDLE}): finché sta inserendo i dati non viene incluso nelle liste dei peer per l'asta, che altrimenti attenderebbe inutilmente il suo voto fino al timeout. Al termine dell'inserimento torna disponibile per le aste successive.
 +
- # Compiler selection based on OS
- ifeq ($(UNAME_S),Darwin)
-     CC = clang
-@@ -37,6 +40,7 @@ $(OBJPATH)/libs/lib_lavagna.o: include/include.h include/include_lavagna.h
- $(OBJPATH)/libs/lib_utente.o:  include/include.h include/include_utente.h
+ Ho scelto come range di tempo necessario per card [1 ; 100] secondi, possono sembrare lunghi ma serve che qualche card richieda più di 90 secondi altrimenti non è verificabile il funzionamento di PING e PONG.
  
- # build both
-+.PHONY: all clean documentazione
- all: $(LAVAGNA_EXECUTABLE_NAME) $(UTENTE_EXECUTABLE_NAME)
- 
- # linking
+ \section*{Comandi disponibili}
+@@ -82,7 +84,7 @@ Gli altri comandi digitati sulla lavagna rispondono ``non disponibile'': \texttt
+ \subsection*{Utente (da terminale)}
+ \begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}
+     \item \texttt{HELLO}: prima operazione obbligatoria, connette e registra l'utente (una sola volta).
+-    \item \texttt{CREATE\_CARD}: chiede ID, colonna (0=ToDo, 1=Doing, 2=Done) e descrizione; riporta accettata o ID duplicato.
++    \item \texttt{CREATE\_CARD}: chiede ID, colonna (0=ToDo, 1=Doing, 2=Done) e descrizione; riporta accettata o ID duplicato. Durante l'inserimento dei campi l'utente è escluso dalle aste; se sceglie la colonna \texttt{Doing} (1), si auto-assegna la card e la lavora per un tempo casuale [1 ; 100] secondi, terminandola con \texttt{CARD\_DONE}.
+     \item \texttt{QUIT}: notifica l'uscita alla lavagna e termina (le sue card \texttt{Doing} tornano in \texttt{ToDo}).
+ \end{itemize}
+ \texttt{ACK\_CARD} e \texttt{CARD\_DONE} sono automatici (vincita asta e fine lavoro); \texttt{SEND\_USER\_LIST}, \texttt{AVAILABLE\_CARD}, \texttt{PING\_USER} e \texttt{PONG\_LAVAGNA} sono solo protocollo e digitati rispondono ``non disponibile''.
+diff --git a/documentazione/pdfoutput/documentazione.pdf b/documentazione/pdfoutput/documentazione.pdf
+index 7e3ae77..e87ce6f 100644
+Binary files a/documentazione/pdfoutput/documentazione.pdf and b/documentazione/pdfoutput/documentazione.pdf differ
+diff --git a/edit.diff b/edit.diff
+index 550dcdb..8770117 100644
+--- a/edit.diff
++++ b/edit.diff
+@@ -1,150 +0,0 @@
+-diff --git a/Makefile b/Makefile
+-index 64cfb1b..322659a 100644
+---- a/Makefile
+-+++ b/Makefile
+-@@ -1,6 +1,9 @@
+- # Detect Operating System per scegliere compilatore
+- UNAME_S := $(shell uname -s)
+- 
+-+# `make` senza argomenti equivale a `make all`
+-+.DEFAULT_GOAL := all
+-+
+- # Compiler selection based on OS
+- ifeq ($(UNAME_S),Darwin)
+-     CC = clang
+-@@ -37,6 +40,7 @@ $(OBJPATH)/libs/lib_lavagna.o: include/include.h include/include_lavagna.h
+- $(OBJPATH)/libs/lib_utente.o:  include/include.h include/include_utente.h
+- 
+- # build both
+-+.PHONY: all clean documentazione
+- all: $(LAVAGNA_EXECUTABLE_NAME) $(UTENTE_EXECUTABLE_NAME)
+- 
+- # linking
+-diff --git a/include/include.h b/include/include.h
+-index 769a496..0e110a2 100644
+---- a/include/include.h
+-+++ b/include/include.h
+-@@ -1,5 +1,6 @@
+- // file include
+- #include <sys/socket.h>
+-+#include <signal.h>
+- #include <unistd.h>
+- #include <stdio.h>
+- #include <stdio.h>
+-diff --git a/lavagna.c b/lavagna.c
+-index 1d4a14f..1c61750 100644
+---- a/lavagna.c
+-+++ b/lavagna.c
+-@@ -2,6 +2,10 @@
+- 
+- int main() {
+- 
+-+  // Ignora SIGPIPE: una send() verso un socket già chiuso non deve terminare
+-+  // la lavagna (default SIGPIPE = terminazione del processo).
+-+  signal(SIGPIPE, SIG_IGN);
+-+
+-   // La spec richiede almeno 10 card tutte in "To Do" all'avvio
+-   seed_carte_iniziali();
+- 
+-diff --git a/libs/lib_lavagna.c b/libs/lib_lavagna.c
+-index 1a49791..e3cdff0 100644
+---- a/libs/lib_lavagna.c
+-+++ b/libs/lib_lavagna.c
+-@@ -446,7 +446,7 @@ void crea_card(utente_des_t*utente) {
+-             printf("tentativo di aggiunta card con ID già utilizzato.\n");
+-         }
+-         // rispondi a utente
+--        send(utente->des, "1", 1, 0);
+-+        (void)send(utente->des, "1", 1, 0);
+-         free(new_card);
+-         free(buf);
+-         return;
+-@@ -467,7 +467,7 @@ void crea_card(utente_des_t*utente) {
+-     // new_card->descrizione
+-     if (memchr(buf + offset, '\0', des_len) == NULL) {
+-         printf("crea_card(): descrizione non terminata.\n");
+--        send(utente->des, "1", 1, 0);
+-+        (void)send(utente->des, "1", 1, 0);
+-         free(new_card);
+-         free(buf);
+-         return;
+-@@ -476,7 +476,7 @@ void crea_card(utente_des_t*utente) {
+-     char*buf_des = malloc(str_len); // alloco zona di memoria per la descrizione
+-     if (buf_des == NULL) {
+-         perror("crea_card(): malloc");
+--        send(utente->des, "1", 1, 0);
+-+        (void)send(utente->des, "1", 1, 0);
+-         free(new_card);
+-         free(buf);
+-         return;
+-@@ -503,7 +503,7 @@ void crea_card(utente_des_t*utente) {
+-     if (DEBUG) {
+-         printf("nuova card creata.\n");
+-     }
+--    send(utente->des, "0", 1, 0);
+-+    (void)send(utente->des, "0", 1, 0);
+-     SHOW_LAVAGNA();
+-     // Una nuova card in ToDo può far scattare AVAILABLE_CARD
+-     if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
+-@@ -969,13 +969,13 @@ void gestisci_hello(utente_des_t*utente) {
+-     uint32_t porta = ntohl(net_porta);
+-     if (porta < 5679 || porta > 65535) {
+-         printf("HELLO con porta non valida (%u), connessione chiusa.\n", porta);
+--        send(utente->des, "NO", 2, 0);
+-+        (void)send(utente->des, "NO", 2, 0);
+-         rimuovi_utente(utente);
+-         return;
+-     }
+-     if (trova_utente((utente_t)porta, NULL) != NULL) {
+-         printf("HELLO con porta %u già registrata, connessione chiusa.\n", porta);
+--        send(utente->des, "NO", 2, 0);
+-+        (void)send(utente->des, "NO", 2, 0);
+-         rimuovi_utente(utente);
+-         return;
+-     }
+-@@ -986,7 +986,7 @@ void gestisci_hello(utente_des_t*utente) {
+-     if (DEBUG) {
+-         printf("accettazione utente %u\n", utente->utente);
+-     }
+--    send(utente->des, "OK", 2, 0);
+-+    (void)send(utente->des, "OK", 2, 0);
+-     STAMPA_UTENTI();
+- 
+-     // Spec (matricola pari): con almeno due utenti registrati si offre la
+-diff --git a/libs/lib_utente.c b/libs/lib_utente.c
+-index 8e1c32b..bee5de6 100644
+---- a/libs/lib_utente.c
+-+++ b/libs/lib_utente.c
+-@@ -75,7 +75,7 @@ void QUIT () {
+-     // rimette in ToDo le mie card in Doing per riassegnarle), poi chiudo
+-     if (connesso) {
+-         uint32_t msg = htonl(ID_QUIT);
+--        send(mysock_utente, &msg, sizeof(msg), 0);
+-+        (void)send(mysock_utente, &msg, sizeof(msg), 0);
+-     }
+-     close(mysock_utente); // invia FIN alla lavagna
+-     exit(0);
+-@@ -253,7 +253,7 @@ void CHOOSE_USER(card_t*card) {
+- 
+-         // Pacchetto: [ID_CARD, MIO_PORT, MIO_COSTO]
+-         uint32_t pkt[3] = { htonl(card->ID), htonl((uint32_t)my_port), htonl(costo) };
+--        sendto(mysock_udp, pkt, sizeof(pkt), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
+-+        (void)sendto(mysock_udp, pkt, sizeof(pkt), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
+-     }
+-     if (DEBUG) {
+-         printf("Inviato il mio costo a tutti gli altri utenti.\n");
+-diff --git a/utente.c b/utente.c
+-index 3e038ea..583ae5d 100644
+---- a/utente.c
+-+++ b/utente.c
+-@@ -12,6 +12,10 @@ int main (int argc, char *argv[]) {
+-     // argv[0] : comando eseguito
+-     // argv[1] : numero di porta, (parte da 5679 incluso)
+- 
+-+    // Ignora SIGPIPE: una send() verso un socket già chiuso non deve terminare
+-+    // l'utente (default SIGPIPE = terminazione del processo).
+-+    signal(SIGPIPE, SIG_IGN);
+-+
+-     srand(time(NULL)); // inizializzo il seme del generatore
+- 
+-     my_port = atoi(argv[1]);
 diff --git a/include/include.h b/include/include.h
-index 769a496..0e110a2 100644
+index 0e110a2..9b8253d 100644
 --- a/include/include.h
 +++ b/include/include.h
-@@ -1,5 +1,6 @@
- // file include
- #include <sys/socket.h>
-+#include <signal.h>
- #include <unistd.h>
- #include <stdio.h>
- #include <stdio.h>
-diff --git a/lavagna.c b/lavagna.c
-index 1d4a14f..1c61750 100644
---- a/lavagna.c
-+++ b/lavagna.c
-@@ -2,6 +2,10 @@
+@@ -47,6 +47,11 @@
+ #define ID_AVAILABLE_CARD 8
+ #define ID_PING_USER 9
+ #define ID_PONG_LAVAGNA 10
++/// comandi di stato (solo protocollo, non digitabili): l'utente segnala alla
++/// lavagna di essere temporaneamente occupato (input da terminale) e di nuovo
++/// disponibile, per essere escluso/incluso nelle liste dei peer per le aste
++#define ID_BUSY 11
++#define ID_IDLE 12
+ /////////
  
- int main() {
+ ///////// typedef
+diff --git a/include/include_lavagna.h b/include/include_lavagna.h
+index fc045ab..2fd517d 100644
+--- a/include/include_lavagna.h
++++ b/include/include_lavagna.h
+@@ -24,6 +24,7 @@ struct utente_des {
+     int des;
+     int doing; // per indicare se l'utente ha già una card assegnata
+     int registrato; // 0 = TCP accettata ma HELLO non ancora ricevuto, 1 = utente registrato
++    int occupato; // 1 = temporaneamente occupato (es. CREATE_CARD da terminale), escluso dalle aste
+     //puntatore al successivo utente
+     struct utente_des*prox;
+ };
+@@ -83,6 +84,11 @@ void crea_card(utente_des_t*utente);
+  */
+ int check_id_card(uint32_t ID);
  
-+  // Ignora SIGPIPE: una send() verso un socket già chiuso non deve terminare
-+  // la lavagna (default SIGPIPE = terminazione del processo).
-+  signal(SIGPIPE, SIG_IGN);
++/* @brief Conta gli utenti idonei a ricevere una card (registrati, non in Doing, non occupati)
++ * @return il numero di utenti idonei
++ */
++int conta_idonei(void);
 +
-   // La spec richiede almeno 10 card tutte in "To Do" all'avvio
-   seed_carte_iniziali();
- 
+ /* @brief La lavagna manda la lista delle porte utilizzate (gli utenti connessi) agli utenti.
+  * @return -1 se non ci sono utenti connessi, -2 se la comunicazione è fallita, 0 se va tutto bene
+  */
 diff --git a/libs/lib_lavagna.c b/libs/lib_lavagna.c
-index 1a49791..e3cdff0 100644
+index e3cdff0..f46a3ff 100644
 --- a/libs/lib_lavagna.c
 +++ b/libs/lib_lavagna.c
-@@ -446,7 +446,7 @@ void crea_card(utente_des_t*utente) {
-             printf("tentativo di aggiunta card con ID già utilizzato.\n");
-         }
-         // rispondi a utente
--        send(utente->des, "1", 1, 0);
-+        (void)send(utente->des, "1", 1, 0);
-         free(new_card);
-         free(buf);
-         return;
-@@ -467,7 +467,7 @@ void crea_card(utente_des_t*utente) {
-     // new_card->descrizione
-     if (memchr(buf + offset, '\0', des_len) == NULL) {
-         printf("crea_card(): descrizione non terminata.\n");
--        send(utente->des, "1", 1, 0);
-+        (void)send(utente->des, "1", 1, 0);
-         free(new_card);
-         free(buf);
-         return;
-@@ -476,7 +476,7 @@ void crea_card(utente_des_t*utente) {
-     char*buf_des = malloc(str_len); // alloco zona di memoria per la descrizione
-     if (buf_des == NULL) {
-         perror("crea_card(): malloc");
--        send(utente->des, "1", 1, 0);
-+        (void)send(utente->des, "1", 1, 0);
-         free(new_card);
-         free(buf);
-         return;
-@@ -503,7 +503,7 @@ void crea_card(utente_des_t*utente) {
+@@ -146,6 +146,7 @@ void accetta_utente() {
+     nuovo_utente->prox = NULL; // è l'ultimo elemento nella lista
+     nuovo_utente->doing = 0;
+     nuovo_utente->registrato = 0;
++    nuovo_utente->occupato = 0;
+ 
      if (DEBUG) {
-         printf("nuova card creata.\n");
-     }
--    send(utente->des, "0", 1, 0);
-+    (void)send(utente->des, "0", 1, 0);
+         printf("nuova connessione TCP in attesa di HELLO (sock %d)\n", utente_sock);
+@@ -322,6 +323,26 @@ void gestisci_messaggio_utente() {
+                     gestisci_quit(attuale);
+                     break;
+                 }
++                case ID_BUSY: {
++                    // l'utente è temporaneamente occupato (es. input da
++                    // terminale): escluso dalle aste finché non invia ID_IDLE
++                    if (attuale->registrato) {
++                        attuale->occupato = 1;
++                    }
++                    break;
++                }
++                case ID_IDLE: {
++                    // l'utente è di nuovo disponibile per le aste
++                    if (attuale->registrato) {
++                        attuale->occupato = 0;
++                    }
++                    // un utente tornato disponibile può sbloccare un'asta
++                    // rimasta ferma mentre era occupato
++                    if (testaToDo) {
++                        AVAILABLE_CARD();
++                    }
++                    break;
++                }
+                 case ID_CREATE_CARD: {
+                     if (!attuale->registrato) {
+                         printf("CREATE_CARD da socket non registrato, ignorato.\n");
+@@ -506,7 +527,7 @@ void crea_card(utente_des_t*utente) {
+     (void)send(utente->des, "0", 1, 0);
      SHOW_LAVAGNA();
      // Una nuova card in ToDo può far scattare AVAILABLE_CARD
-     if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
-@@ -969,13 +969,13 @@ void gestisci_hello(utente_des_t*utente) {
-     uint32_t porta = ntohl(net_porta);
-     if (porta < 5679 || porta > 65535) {
-         printf("HELLO con porta non valida (%u), connessione chiusa.\n", porta);
--        send(utente->des, "NO", 2, 0);
-+        (void)send(utente->des, "NO", 2, 0);
-         rimuovi_utente(utente);
-         return;
+-    if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
++    if (testaToDo && conta_idonei() > 1) {
+         AVAILABLE_CARD();
      }
-     if (trova_utente((utente_t)porta, NULL) != NULL) {
-         printf("HELLO con porta %u già registrata, connessione chiusa.\n", porta);
--        send(utente->des, "NO", 2, 0);
-+        (void)send(utente->des, "NO", 2, 0);
-         rimuovi_utente(utente);
-         return;
-     }
-@@ -986,7 +986,7 @@ void gestisci_hello(utente_des_t*utente) {
-     if (DEBUG) {
-         printf("accettazione utente %u\n", utente->utente);
-     }
--    send(utente->des, "OK", 2, 0);
-+    (void)send(utente->des, "OK", 2, 0);
-     STAMPA_UTENTI();
+ }
+@@ -570,6 +591,19 @@ int check_id_card(uint32_t ID) {
+     return 0;
+ }
  
-     // Spec (matricola pari): con almeno due utenti registrati si offre la
++/* @brief Conta gli utenti idonei a ricevere una card: registrati, non in
++ * Doing e non temporaneamente occupati. Unica fonte di verità per l'idoneità.
++ */
++int conta_idonei(void) {
++    int n = 0;
++    for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
++        if (u->registrato && !u->doing && !u->occupato) {
++            n++;
++        }
++    }
++    return n;
++}
++
+ int SEND_USER_LIST() {
+     // controllo se ci sono utenti connessi (registrati)
+     if (!utentiConnessi) {
+@@ -577,10 +611,10 @@ int SEND_USER_LIST() {
+         return -1;
+     }
+ 
+-    // lista dei registrati non in Doing (idonei a ricevere una card)
++    // lista dei registrati non in Doing e non occupati (idonei a ricevere una card)
+     int idonei = 0;
+     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+-        if (u->registrato && !u->doing) {
++        if (u->registrato && !u->doing && !u->occupato) {
+             idonei++;
+         }
+     }
+@@ -601,14 +635,14 @@ int SEND_USER_LIST() {
+     }
+     int i = 0;
+     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+-        if (u->registrato && !u->doing) {
++        if (u->registrato && !u->doing && !u->occupato) {
+             utenti[i++] = u->utente;
+         }
+     }
+ 
+     int rc = 0;
+     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+-        if (!u->registrato) {
++        if (!u->registrato || u->occupato) {
+             continue;
+         }
+         // mando comando e dimensione matrice
+@@ -633,7 +667,7 @@ void AVAILABLE_CARD() {
+     // Spec (matricola pari): solo con almeno due utenti registrati idonei
+     int idonei = 0;
+     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+-        if (u->registrato && !u->doing) {
++        if (u->registrato && !u->doing && !u->occupato) {
+             idonei++;
+         }
+     }
+@@ -683,7 +717,7 @@ void AVAILABLE_CARD() {
+     // Per ogni destinatario: prima la sua SEND_USER_LIST (lista degli altri
+     // idonei + conteggio totale, come da spec), poi la card.
+     for (utente_des_t *lavoro = testa_des_utente; lavoro != NULL; lavoro = lavoro->prox) {
+-        if (!lavoro->registrato || lavoro->doing) {
++        if (!lavoro->registrato || lavoro->doing || lavoro->occupato) {
+             continue;
+         }
+         // lista degli altri idonei (escluso il destinatario)
+@@ -697,7 +731,7 @@ void AVAILABLE_CARD() {
+             }
+             int k = 0;
+             for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+-                if (u->registrato && !u->doing && u != lavoro) {
++                if (u->registrato && !u->doing && !u->occupato && u != lavoro) {
+                     mat[k++] = u->utente;
+                 }
+             }
+@@ -851,7 +885,7 @@ void ACK_CARD(utente_des_t*utente) {
+ 
+     attesa_ack = 0;
+     SHOW_LAVAGNA();
+-    if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
++    if (testaToDo && conta_idonei() > 1) {
+         // ci sono altre card in todo, le invio
+         AVAILABLE_CARD();
+     }
+@@ -906,7 +940,7 @@ void card_done(utente_des_t*utente) {
+     }
+ 
+     SHOW_LAVAGNA();
+-    if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
++    if (testaToDo && conta_idonei() > 1) {
+         // ci sono altre card in todo, le invio
+         AVAILABLE_CARD();
+     }
+@@ -1032,7 +1066,7 @@ void gestisci_quit(utente_des_t*utente) {
+     // Se restano meno di 2 idonei, le pending non sono più assegnabili: tornano in ToDo
+     int idonei = 0;
+     for (utente_des_t *u = testa_des_utente; u != NULL; u = u->prox) {
+-        if (u->registrato && !u->doing && u != utente) {
++        if (u->registrato && !u->doing && !u->occupato && u != utente) {
+             idonei++;
+         }
+     }
 diff --git a/libs/lib_utente.c b/libs/lib_utente.c
-index 8e1c32b..bee5de6 100644
+index 691a127..a47a528 100644
 --- a/libs/lib_utente.c
 +++ b/libs/lib_utente.c
-@@ -75,7 +75,7 @@ void QUIT () {
-     // rimette in ToDo le mie card in Doing per riassegnarle), poi chiudo
-     if (connesso) {
-         uint32_t msg = htonl(ID_QUIT);
--        send(mysock_utente, &msg, sizeof(msg), 0);
-+        (void)send(mysock_utente, &msg, sizeof(msg), 0);
-     }
-     close(mysock_utente); // invia FIN alla lavagna
-     exit(0);
-@@ -253,7 +253,7 @@ void CHOOSE_USER(card_t*card) {
+@@ -94,6 +94,15 @@ void PONG_LAVAGNA(uint32_t id_card) {
+     printf("PONG inviato per card %u.\n", id_card);
+ }
  
-         // Pacchetto: [ID_CARD, MIO_PORT, MIO_COSTO]
-         uint32_t pkt[3] = { htonl(card->ID), htonl((uint32_t)my_port), htonl(costo) };
--        sendto(mysock_udp, pkt, sizeof(pkt), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
-+        (void)sendto(mysock_udp, pkt, sizeof(pkt), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
-     }
-     if (DEBUG) {
-         printf("Inviato il mio costo a tutti gli altri utenti.\n");
-diff --git a/utente.c b/utente.c
-index 3e038ea..583ae5d 100644
---- a/utente.c
-+++ b/utente.c
-@@ -12,6 +12,10 @@ int main (int argc, char *argv[]) {
-     // argv[0] : comando eseguito
-     // argv[1] : numero di porta, (parte da 5679 incluso)
- 
-+    // Ignora SIGPIPE: una send() verso un socket già chiuso non deve terminare
-+    // l'utente (default SIGPIPE = terminazione del processo).
-+    signal(SIGPIPE, SIG_IGN);
++/* @brief Notifica alla lavagna lo stato di occupazione temporanea dell'utente:
++ * ID_BUSY mentre si digita CREATE_CARD (escluso dalle aste), ID_IDLE quando si
++ * torna disponibili.
++ */
++static void invia_stato(uint32_t id) {
++    uint32_t msg = htonl(id);
++    (void)send(mysock_utente, &msg, sizeof(msg), 0);
++}
 +
-     srand(time(NULL)); // inizializzo il seme del generatore
+ void CREATE_CARD() {
+     // comunico alla lavagna una nuova carta
+     // servono ID, colonna (0=ToDo, 1=Doing, 2=Done) e testo attività
+@@ -103,12 +112,17 @@ void CREATE_CARD() {
+         return;
+     }
  
-     my_port = atoi(argv[1]);
++    // Segnalo alla lavagna che sono occupato: durante la digitazione dei campi
++    // non devo essere incluso nelle liste dei peer per le aste.
++    invia_stato(ID_BUSY);
++
+     // --- ID carta: intero 0..2^31-1, input validato riga per riga ---
+     long id_carta = -1;
+     while (id_carta < 0) {
+         printf("Inserire ID carta (numero >= 0):\n");
+         char buf_id[32] = {0};
+         if (fgets(buf_id, sizeof(buf_id), stdin) == NULL) {
++            invia_stato(ID_IDLE);
+             return;
+         }
+         if (strchr(buf_id, '\n') == NULL) {
+@@ -137,6 +151,7 @@ void CREATE_CARD() {
+         printf("Inserire colonna (0=ToDo, 1=Doing, 2=Done) [default 0]:\n");
+         char buf_col[16] = {0};
+         if (fgets(buf_col, sizeof(buf_col), stdin) == NULL) {
++            invia_stato(ID_IDLE);
+             return;
+         }
+         if (strchr(buf_col, '\n') == NULL) {
+@@ -165,7 +180,10 @@ void CREATE_CARD() {
+     printf("Inserire descrizione attività:\n");
+     char buf_des[DES_ATT_LEN];
+ 
+-    if (fgets(buf_des, DES_ATT_LEN, stdin) == NULL) return;
++    if (fgets(buf_des, DES_ATT_LEN, stdin) == NULL) {
++        invia_stato(ID_IDLE);
++        return;
++    }
+     size_t des_len = strlen(buf_des);
+     if (des_len > 0 && buf_des[des_len - 1] == '\n') { // rimuovo il newline
+         buf_des[des_len - 1] = '\0';
+@@ -178,6 +196,7 @@ void CREATE_CARD() {
+ 
+     if (buf == NULL) { // controllo errore nella malloc
+         perror("malloc error");
++        invia_stato(ID_IDLE);
+         return;
+     }
+ 
+@@ -251,6 +270,9 @@ void CREATE_CARD() {
+     }
+ 
+     free(buf);
++
++    // Di nuovo disponibile: la lavagna può includermi nelle prossime aste
++    invia_stato(ID_IDLE);
+ }
+ 
+ void CHOOSE_USER(card_t*card) {

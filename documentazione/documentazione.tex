@@ -1,6 +1,6 @@
 % preamble:
 \documentclass[10pt,a4paper, titlepage]{article}
-\usepackage[a4paper, margin=0.85in]{geometry}  % Adjust margin size
+\usepackage[a4paper, margin=0.50in]{geometry}  % Adjust margin size
 % \usepackage{amsmath}
 % \usepackage{graphicx}
 % \usepackage{hyperref}
@@ -19,6 +19,13 @@
 \subsection*{Scelta del Protocollo di Trasporto}
 TCP per le comunicazioni Utente - Lavagna. La TCP handshake funziona da HELLO, o meglio il comando HELLO inizia la TCP handshake.
 UDP per le comunicazioni Utente - Utente, poichè le comunicazioni tra utenti sono sporadiche, così da risparmiare l'overhead della connessione TCP.
+
+Concretamente, ogni processo usa questi socket (tutti su \texttt{127.0.0.1}):
+\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}
+    \item \textbf{Lavagna}: un socket TCP di \textbf{ascolto} sulla porta 5678 più, per ogni utente connesso, un socket TCP \textbf{accettato} (uno per utente, salvato nel descrittore dell'utente): in totale $1 + N$ socket TCP, con $N$ = numero di utenti connessi;
+    \item \textbf{Utente}: un socket TCP \textbf{connesso alla lavagna} (fa \texttt{connect()} verso la porta 5678, legato alla propria porta $\geq 5679$) e un socket UDP \textbf{legato alla propria porta}, usato per scambiare i pacchetti \texttt{CHOOSE\_USER} con gli altri utenti.
+\end{itemize}
+
 Se un messaggio UDP non arriva a destinazione, durante la scelta dell'utente per la card, l'utente viene escluso dal round di assegnazione;
 se più utenti si nominano alla lavagna per l'assegnazione, la lavagna gestisce la corsa con disciplina FIFO, rischiando di non assegnare la card in maniera ottima.
 \subsection*{Scelta del tipo di concorrenza per la Lavagna}
@@ -48,9 +55,6 @@ I numeri sono portati in endianess di rete prima di essere inviati e riportati i
 
 La descrizione dell'attività ha lunghezza massima fissa (\texttt{DES\_ATT\_LEN}=1024 byte): delimita la memoria e semplifica la validazione, ma tronca i testi più lunghi.
 
-\subsection*{Gestione dei socket}
-La lavagna usa un socket TCP di ascolto e uno slot per utente, tutti multiplexati con \texttt{select()} a timeout di 1s assieme a stdin: accetta connessioni, serve tutti i descrittori pronti ed esegue il controllo periodico dei PING. Ogni utente ha un socket TCP verso la lavagna e un socket UDP verso i pari per l'asta.
-
 \subsection*{PING\_USER e PONG\_LAVAGNA}
 Le card in \texttt{Doing} da pi\`u di 90s ricevono \texttt{[ID\_PING\_USER][ID\_card]} e l'utente risponde \texttt{[ID\_PONG\_LAVAGNA][ID\_card]};
 senza PONG entro 30s la card torna in \texttt{ToDo} (queste costanti sono definite in \texttt{include.h} e i valori sono presi dalle specifiche).
@@ -68,6 +72,9 @@ Se all'interno di un'asta un utente smette di rispondere, gli altri decidono con
 
 Utenti già impegnati con una card in Doing non partecipano alle aste: nessun utente può così accumulare più card in parallelo. Pregio: invariante semplice (una card per utente). Difetto: con due soli utenti, se uno è impegnato, le card in ToDo restano ferme finché quello non termina.
 
+Durante la digitazione dei campi di una \texttt{CREATE\_CARD} l'utente notifica alla lavagna di essere temporaneamente occupato (\texttt{ID\_BUSY}/\texttt{ID\_IDLE}): finché sta inserendo i dati non viene incluso nelle liste dei peer per l'asta, che altrimenti attenderebbe inutilmente il suo voto fino al timeout. Al termine dell'inserimento torna disponibile per le aste successive.
+Questo mi è sembrato l'unico modo per fare in modo che ogni utente abbia al più una card assegnata (altrimenti cosa succederebbe se durante la creazione di una card un utente partecipasse ad una asta, vincesse, ed infine la card della \texttt{CREATE\_CARD} venisse assegnata alla colonna Doing? L'utente si ritroverebbe con due card in Doing) ma al prezzo di diverge dalle specifiche, che indicano che all'asta debbano partecipare tutti gli utenti disponibili.
+
 Ho scelto come range di tempo necessario per card [1 ; 100] secondi, possono sembrare lunghi ma serve che qualche card richieda più di 90 secondi altrimenti non è verificabile il funzionamento di PING e PONG.
 
 \section*{Comandi disponibili}
@@ -82,21 +89,18 @@ Gli altri comandi digitati sulla lavagna rispondono ``non disponibile'': \texttt
 \subsection*{Utente (da terminale)}
 \begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}
     \item \texttt{HELLO}: prima operazione obbligatoria, connette e registra l'utente (una sola volta).
-    \item \texttt{CREATE\_CARD}: chiede ID, colonna (0=ToDo, 1=Doing, 2=Done) e descrizione; riporta accettata o ID duplicato.
+    \item \texttt{CREATE\_CARD}: chiede ID, colonna (0=ToDo, 1=Doing, 2=Done) e descrizione; riporta accettata o ID duplicato. Durante l'inserimento dei campi l'utente è escluso dalle aste; se sceglie la colonna \texttt{Doing} (1), si auto-assegna la card e la lavora per un tempo casuale [1 ; 100] secondi, terminandola con \texttt{CARD\_DONE}.
     \item \texttt{QUIT}: notifica l'uscita alla lavagna e termina (le sue card \texttt{Doing} tornano in \texttt{ToDo}).
 \end{itemize}
 \texttt{ACK\_CARD} e \texttt{CARD\_DONE} sono automatici (vincita asta e fine lavoro); \texttt{SEND\_USER\_LIST}, \texttt{AVAILABLE\_CARD}, \texttt{PING\_USER} e \texttt{PONG\_LAVAGNA} sono solo protocollo e digitati rispondono ``non disponibile''.
 
 \section*{Istruzioni sulla Compilazione}
-Comando per compilare il progetto:
+Comando per compilare il progetto e comando per rimuovere i file oggetto:
 \begin{verbatim}
 make all
-\end{verbatim}
-Comando per rimuovere i file oggetto:
-\begin{verbatim}
 make clean
 \end{verbatim}
-Il comando crea i due file eseguibili richiesti nella root directory del progetto.
+Il comando \texttt{make all} crea i due file eseguibili richiesti nella root directory del progetto.
 Per eseguirli si può proseguire come indicato nelle specifiche del progetto.
 
 

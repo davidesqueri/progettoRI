@@ -94,6 +94,15 @@ void PONG_LAVAGNA(uint32_t id_card) {
     printf("PONG inviato per card %u.\n", id_card);
 }
 
+/* @brief Notifica alla lavagna lo stato di occupazione temporanea dell'utente:
+ * ID_BUSY mentre si digita CREATE_CARD (escluso dalle aste), ID_IDLE quando si
+ * torna disponibili.
+ */
+static void invia_stato(uint32_t id) {
+    uint32_t msg = htonl(id);
+    (void)send(mysock_utente, &msg, sizeof(msg), 0);
+}
+
 void CREATE_CARD() {
     // comunico alla lavagna una nuova carta
     // servono ID, colonna (0=ToDo, 1=Doing, 2=Done) e testo attività
@@ -103,12 +112,17 @@ void CREATE_CARD() {
         return;
     }
 
+    // Segnalo alla lavagna che sono occupato: durante la digitazione dei campi
+    // non devo essere incluso nelle liste dei peer per le aste.
+    invia_stato(ID_BUSY);
+
     // --- ID carta: intero 0..2^31-1, input validato riga per riga ---
     long id_carta = -1;
     while (id_carta < 0) {
         printf("Inserire ID carta (numero >= 0):\n");
         char buf_id[32] = {0};
         if (fgets(buf_id, sizeof(buf_id), stdin) == NULL) {
+            invia_stato(ID_IDLE);
             return;
         }
         if (strchr(buf_id, '\n') == NULL) {
@@ -137,6 +151,7 @@ void CREATE_CARD() {
         printf("Inserire colonna (0=ToDo, 1=Doing, 2=Done) [default 0]:\n");
         char buf_col[16] = {0};
         if (fgets(buf_col, sizeof(buf_col), stdin) == NULL) {
+            invia_stato(ID_IDLE);
             return;
         }
         if (strchr(buf_col, '\n') == NULL) {
@@ -165,7 +180,10 @@ void CREATE_CARD() {
     printf("Inserire descrizione attività:\n");
     char buf_des[DES_ATT_LEN];
 
-    if (fgets(buf_des, DES_ATT_LEN, stdin) == NULL) return;
+    if (fgets(buf_des, DES_ATT_LEN, stdin) == NULL) {
+        invia_stato(ID_IDLE);
+        return;
+    }
     size_t des_len = strlen(buf_des);
     if (des_len > 0 && buf_des[des_len - 1] == '\n') { // rimuovo il newline
         buf_des[des_len - 1] = '\0';
@@ -178,6 +196,7 @@ void CREATE_CARD() {
 
     if (buf == NULL) { // controllo errore nella malloc
         perror("malloc error");
+        invia_stato(ID_IDLE);
         return;
     }
 
@@ -251,6 +270,9 @@ void CREATE_CARD() {
     }
 
     free(buf);
+
+    // Di nuovo disponibile: la lavagna può includermi nelle prossime aste
+    invia_stato(ID_IDLE);
 }
 
 void CHOOSE_USER(card_t*card) {
