@@ -102,7 +102,6 @@ int main (int argc, char *argv[]) {
             case 2: {
                 // messaggio dal terminale
                 DBG(Gestione comando da terminale.);
-                printf("Inserire un comando:\n");
                 if (fgets(buf, sizeof(buf), stdin) == NULL) { // questo legge al più (numero di caratteri disponibili in buf - 1), ed in fondo aggiunge \0
                     // EOF/errore su stdin (es. input ridiretto terminato):
                     // non validare il vecchio contenuto di buf e smetti di

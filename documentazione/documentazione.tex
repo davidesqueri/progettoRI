@@ -77,6 +77,8 @@ Questo mi è sembrato l'unico modo per fare in modo che ogni utente abbia al pi�
 
 Ho scelto come range di tempo necessario per card [1 ; 100] secondi, possono sembrare lunghi ma serve che qualche card richieda più di 90 secondi altrimenti non è verificabile il funzionamento di PING e PONG.
 
+In una \texttt{CHOOSE\_USER}, se tutti gli utenti di disconnettono durante l'asta tranne 1, l'asta viene annullata, la card torna disponibile in ToDo e si continua normalmente, non viene assegnata all'unico utente rimasto connesso.
+
 \section*{Comandi disponibili}
 Avvio: \texttt{./lavagna} (nessun argomento, porta 5678) e \texttt{./utente <porta>} (porta $\geq$ 5679).
 Quando viene inserito un comando, se questo necessita di ulteriori campi successivamente, essi vengono richiesti iterativamente.

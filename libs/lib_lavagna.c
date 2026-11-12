@@ -5,7 +5,7 @@ int mysock_lavagna; // mysock_lavagna è il socket di ascolto
 int max_des;
 int stdin_chiusa = 0;
 char comando[256]; // buffer per il comando da terminale
-uint16_t ID_LAVAGNA = 6969;
+uint16_t ID_LAVAGNA = 9001;
 fd_set readfds; // set di descrittori da controllare per la lettura
 card_t *testaToDo = NULL;
 card_t *testaDoing = NULL;

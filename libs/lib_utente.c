@@ -237,8 +237,8 @@ void CREATE_CARD() {
                 card_t card = {0};
                 card.ID = (uint32_t)id_carta;
                 int tempo_lavoro = 1 + rando() % 100;
-                printf("Durata Lavoro Card: %i secondi\n", tempo_lavoro);
-                printf("Lavorando sulla carta...\n");
+                printf("\nDurata Lavoro Card: %i secondi\n", tempo_lavoro);
+                if (DEBUG) {printf("Lavorando sulla carta...\n");}
 
                 for (int i = tempo_lavoro; i > 0; i--) {
                     // controlla ping lavagna
@@ -347,8 +347,12 @@ void CHOOSE_USER(card_t*card) {
             break;
         }
         if (pronti == 0) {
-            printf("CHOOSE_USER: timeout, decido con %d/%d voti ricevuti.\n",
-                voti_ricevuti, attesi);
+            printf("CHOOSE_USER: timeout, decido con %d/%d voti ricevuti.\n", voti_ricevuti, attesi);
+            if (voti_ricevuti == 0) {
+                // sono rimasto l'unico in asta, abortisco la CHOOSE_USER
+                printf("Sono rimasto l'unico in asta, abortisco la CHOOSE_USER.\n");
+                return;
+            }
             break;
         }
         uint32_t pkt_recv[3];
