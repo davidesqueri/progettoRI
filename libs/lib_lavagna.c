@@ -86,7 +86,7 @@ void SHOW_LAVAGNA() {
     printf("-------------------------------------------\n");
     // Dettaglio card: descrizione, responsabile e timestamp
     printf("\n--- Dettaglio card ---\n");
-    const char *nomi[3] = {"ToDo", "Doing", "Done"};
+    const char *nomi[3] = {"[ToDo] ", "[Doing]", "[Done] "};
     card_t *liste[3] = {testaToDo, testaDoing, testaDone};
     for (int i = 0; i < 3; i++) {
         for (card_t *c = liste[i]; c != NULL; c = c->prox) {
@@ -97,7 +97,7 @@ void SHOW_LAVAGNA() {
                     strftime(tbuf, sizeof(tbuf), "%Y-%m-%d %H:%M:%S", tm);
                 }
             }
-            printf("[%s] ID=%u resp=%u mod=%s desc=\"%s\"\n",
+            printf("%s ID=%3u resp=%5u mod=%s desc=\"%s\"\n",
                 nomi[i], c->ID, c->responsabile, tbuf,
                 c->descrizione ? c->descrizione : "");
         }
