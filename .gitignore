@@ -4,3 +4,7 @@ AGENTS.md
 .DS_Store
 lavagna
 utente
+
+# artefatti LaTeX (rigenerati da make documentazione)
+documentazione/*.aux
+documentazione/*.log

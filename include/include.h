@@ -3,11 +3,8 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <stdio.h>
 #include <time.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
@@ -15,8 +12,6 @@
 #include <sys/select.h>
 #include <fcntl.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
 #define DEBUG 0 // 1=stampa messaggi di debug , 0=non stampa messaggi di debug
 
