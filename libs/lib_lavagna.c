@@ -84,8 +84,8 @@ void SHOW_LAVAGNA() {
         }
     }
     printf("-------------------------------------------\n");
-    // Dettaglio card: descrizione, responsabile e timestamp (richiesti dalla spec)
-    printf("--- Dettaglio card ---\n");
+    // Dettaglio card: descrizione, responsabile e timestamp
+    printf("\n--- Dettaglio card ---\n");
     const char *nomi[3] = {"ToDo", "Doing", "Done"};
     card_t *liste[3] = {testaToDo, testaDoing, testaDone};
     for (int i = 0; i < 3; i++) {
