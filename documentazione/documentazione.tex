@@ -9,7 +9,7 @@
 \author{Davide Squeri}
 \title{Documentazione Progetto Reti Informatiche\\[0.3em]
 \large{Anno Accademico 2025/2026, matricola pari}}
-\date{19/02/2025}
+\date{12/11/2026}
 
 % document
 \begin{document}
@@ -17,7 +17,7 @@
 
 \section*{Documentazione}
 \subsection*{Scelta del Protocollo di Trasporto}
-TCP per le comunicazioni Utente - Lavagna. La TCP handshake funziona da HELLO, o meglio il comando HELLO inizia la TCP handshake.
+TCP per le comunicazioni Utente - Lavagna. La TCP handshake funziona da HELLO, o meglio il comando HELLO inserito da terminale causa l'inzio della connessione TCP e procede poi con l'handshake applicativa.
 UDP per le comunicazioni Utente - Utente, poichè le comunicazioni tra utenti sono sporadiche, così da risparmiare l'overhead della connessione TCP.
 
 Concretamente, ogni processo usa questi socket (tutti su \texttt{127.0.0.1}):
@@ -73,7 +73,7 @@ Se all'interno di un'asta un utente smette di rispondere, gli altri decidono con
 Utenti già impegnati con una card in Doing non partecipano alle aste: nessun utente può così accumulare più card in parallelo. Pregio: invariante semplice (una card per utente). Difetto: con due soli utenti, se uno è impegnato, le card in ToDo restano ferme finché quello non termina.
 
 Durante la digitazione dei campi di una \texttt{CREATE\_CARD} l'utente notifica alla lavagna di essere temporaneamente occupato (\texttt{ID\_BUSY}/\texttt{ID\_IDLE}): finché sta inserendo i dati non viene incluso nelle liste dei peer per l'asta, che altrimenti attenderebbe inutilmente il suo voto fino al timeout. Al termine dell'inserimento torna disponibile per le aste successive.
-Questo mi è sembrato l'unico modo per fare in modo che ogni utente abbia al più una card assegnata (altrimenti cosa succederebbe se durante la creazione di una card un utente partecipasse ad una asta, vincesse, ed infine la card della \texttt{CREATE\_CARD} venisse assegnata alla colonna Doing? L'utente si ritroverebbe con due card in Doing) ma al prezzo di diverge dalle specifiche, che indicano che all'asta debbano partecipare tutti gli utenti disponibili.
+Questo mi è sembrato l'unico modo per fare in modo che ogni utente abbia al più una card assegnata (altrimenti cosa succederebbe se durante la creazione di una card un utente partecipasse ad una asta, vincesse, ed infine la card della \texttt{CREATE\_CARD} venisse assegnata alla colonna Doing? L'utente si ritroverebbe con due card in Doing) ma al prezzo di divergere dalle specifiche, che indicano che all'asta debbano partecipare tutti gli utenti disponibili.
 
 Ho scelto come range di tempo necessario per card [1 ; 100] secondi, possono sembrare lunghi ma serve che qualche card richieda più di 90 secondi altrimenti non è verificabile il funzionamento di PING e PONG.
 
