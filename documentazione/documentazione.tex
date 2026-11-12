@@ -49,7 +49,7 @@ Ho deciso che i primi 4 byte di ogni messaggio sono l'ID del comando (\texttt{ui
 max1024byte: descrizione_attività
 1byte:'\0'
 \end{verbatim}
-Il campo lunghezza permette al ricevente di sapere esattamente quanti byte leggere (letture in ciclo fino a esaurimento). La \texttt{HELLO} \`e \texttt{[ID\_HELLO][porta\_utente]} con risposta \texttt{"OK"}/\texttt{"NO"}; la \texttt{QUIT} \`e il solo ID comando. La \texttt{AVAILABLE\_CARD} arriva dopo una \texttt{SEND\_USER\_LIST} per-recipient (lista degli altri idonei + conteggio), poi \texttt{[ID\_AVAILABLE\_CARD][len][ID\_card][descrizione]}. L'asta \texttt{CHOOSE\_USER} viaggia su UDP con pacchetti \texttt{[ID\_card][porta][costo]}: l'ID card scarta i pacchetti stantii delle aste precedenti.
+Il campo lunghezza permette al ricevente di sapere esattamente quanti byte leggere (letture in ciclo fino a esaurimento). La \texttt{HELLO} \`e \texttt{[ID\_HELLO]}\allowbreak\texttt{[porta\_utente]} con risposta \texttt{"OK"}/\texttt{"NO"}; la \texttt{QUIT} \`e il solo ID comando. La \texttt{AVAILABLE\_CARD} arriva dopo una \texttt{SEND\_USER\_LIST} per-recipient (lista degli altri idonei + conteggio), poi \texttt{[ID\_AVAILABLE\_CARD]}\allowbreak\texttt{[len]}\allowbreak\texttt{[ID\_card]}\allowbreak\texttt{[descrizione]}. L'asta \texttt{CHOOSE\_USER} viaggia su UDP con pacchetti \texttt{[ID\_card]}\allowbreak\texttt{[porta]}\allowbreak\texttt{[costo]}: l'ID card scarta i pacchetti stantii delle aste precedenti.
 
 I numeri sono portati in endianess di rete prima di essere inviati e riportati in endianess di sistema all'arrivo (\texttt{htonl}/\texttt{ntohl}). Al costo di maggiore verbosità del codice otteniamo correttezza su architettura con diversa endianess.
 
