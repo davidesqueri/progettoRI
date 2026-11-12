@@ -244,8 +244,6 @@ void CREATE_CARD() {
             fflush(stdout);
             sleep(1);
         }
-        CARD_DONE(card);
-        printf("\rLavoro terminato!             \n");
     }
 }
 
