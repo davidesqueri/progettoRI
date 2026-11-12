@@ -212,6 +212,38 @@ void CREATE_CARD() {
         buf_risposta[1] = '\0';
         if (strcmp("0", buf_risposta) == 0) { // se ricevo 0 da lavagna, ID è disponibile
             printf("card accettata.\n");
+            if (colonna == 1) {
+                // la card è in Doing e assegnata a me: comincio a lavorarci.
+                // Costruisco una card locale: a CARD_DONE serve solo l'ID.
+                card_t card = {0};
+                card.ID = (uint32_t)id_carta;
+                int tempo_lavoro = 1 + rando() % 100;
+                printf("Durata Lavoro Card: %i secondi\n", tempo_lavoro);
+                printf("Lavorando sulla carta...\n");
+
+                for (int i = tempo_lavoro; i > 0; i--) {
+                    // controlla ping lavagna
+                    // 1. controllo se ci siano messaggi dalla lavagna
+                    char peek[16];
+                    ssize_t bytes = recv(mysock_utente, (void*)peek, 1, MSG_PEEK | MSG_DONTWAIT);
+                    if (bytes > 0) {
+                        // gestisco il messaggio della lavagna
+                        gestisci_messaggio_lavagna();
+                    }
+                    else if (bytes == 0) {
+                        printf("\nLa lavagna ha chiuso la connessione, disconnessione...\n");
+                        QUIT();
+                    }
+                    // torno a gestire la card
+                    printf("\rTempo rimanente: %3d secondi",i);
+                    fflush(stdout);
+                    sleep(1);
+                }
+
+                // Lavoro finito: comunico il completamento alla lavagna
+                CARD_DONE(&card);
+                printf("\rLavoro terminato!             \n");
+            }
         }
         else { // lavagna invia 1: ID non disponibile
             printf("ID card non disponibile, ritentare.\n");
@@ -219,32 +251,6 @@ void CREATE_CARD() {
     }
 
     free(buf);
-
-    if (colonna==1) {
-        // devo lavorare alla card
-        int tempo_lavoro = 1 + rando()%100;
-        printf("Durata Lavoro Card: %i secondi\n", tempo_lavoro);
-        printf("Lavorando sulla carta...\n");
-
-        for (int i = tempo_lavoro; i > 0; i--) {
-            // controlla ping lavagna
-            // 1. controllo se ci siano messaggi dalla lavagna
-            char peek[16];
-            ssize_t bytes = recv(mysock_utente, (void*)peek, 1, MSG_PEEK | MSG_DONTWAIT);
-            if (bytes > 0) {
-                // gestisco il messaggio della lavagna
-                gestisci_messaggio_lavagna();
-            }
-            else if (bytes == 0) {
-                printf("\nLa lavagna ha chiuso la connessione, disconnessione...\n");
-                QUIT();
-            }
-            // torno a gestire la card
-            printf("\rTempo rimanente: %3d secondi",i);
-            fflush(stdout);
-            sleep(1);
-        }
-    }
 }
 
 void CHOOSE_USER(card_t*card) {
