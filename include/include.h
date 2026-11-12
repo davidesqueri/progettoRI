@@ -1,5 +1,6 @@
 // file include
 #include <sys/socket.h>
+#include <signal.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdio.h>

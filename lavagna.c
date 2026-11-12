@@ -2,6 +2,10 @@
 
 int main() {
 
+  // Ignora SIGPIPE: una send() verso un socket già chiuso non deve terminare
+  // la lavagna (default SIGPIPE = terminazione del processo).
+  signal(SIGPIPE, SIG_IGN);
+
   // La spec richiede almeno 10 card tutte in "To Do" all'avvio
   seed_carte_iniziali();
 

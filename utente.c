@@ -12,6 +12,10 @@ int main (int argc, char *argv[]) {
     // argv[0] : comando eseguito
     // argv[1] : numero di porta, (parte da 5679 incluso)
 
+    // Ignora SIGPIPE: una send() verso un socket già chiuso non deve terminare
+    // l'utente (default SIGPIPE = terminazione del processo).
+    signal(SIGPIPE, SIG_IGN);
+
     srand(time(NULL)); // inizializzo il seme del generatore
 
     my_port = atoi(argv[1]);

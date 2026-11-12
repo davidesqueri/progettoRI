@@ -1,6 +1,9 @@
 # Detect Operating System per scegliere compilatore
 UNAME_S := $(shell uname -s)
 
+# `make` senza argomenti equivale a `make all`
+.DEFAULT_GOAL := all
+
 # Compiler selection based on OS
 ifeq ($(UNAME_S),Darwin)
     CC = clang
@@ -37,6 +40,7 @@ $(OBJPATH)/libs/lib_lavagna.o: include/include.h include/include_lavagna.h
 $(OBJPATH)/libs/lib_utente.o:  include/include.h include/include_utente.h
 
 # build both
+.PHONY: all clean documentazione
 all: $(LAVAGNA_EXECUTABLE_NAME) $(UTENTE_EXECUTABLE_NAME)
 
 # linking

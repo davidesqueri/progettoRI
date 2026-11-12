@@ -446,7 +446,7 @@ void crea_card(utente_des_t*utente) {
             printf("tentativo di aggiunta card con ID già utilizzato.\n");
         }
         // rispondi a utente
-        send(utente->des, "1", 1, 0);
+        (void)send(utente->des, "1", 1, 0);
         free(new_card);
         free(buf);
         return;
@@ -467,7 +467,7 @@ void crea_card(utente_des_t*utente) {
     // new_card->descrizione
     if (memchr(buf + offset, '\0', des_len) == NULL) {
         printf("crea_card(): descrizione non terminata.\n");
-        send(utente->des, "1", 1, 0);
+        (void)send(utente->des, "1", 1, 0);
         free(new_card);
         free(buf);
         return;
@@ -476,7 +476,7 @@ void crea_card(utente_des_t*utente) {
     char*buf_des = malloc(str_len); // alloco zona di memoria per la descrizione
     if (buf_des == NULL) {
         perror("crea_card(): malloc");
-        send(utente->des, "1", 1, 0);
+        (void)send(utente->des, "1", 1, 0);
         free(new_card);
         free(buf);
         return;
@@ -503,7 +503,7 @@ void crea_card(utente_des_t*utente) {
     if (DEBUG) {
         printf("nuova card creata.\n");
     }
-    send(utente->des, "0", 1, 0);
+    (void)send(utente->des, "0", 1, 0);
     SHOW_LAVAGNA();
     // Una nuova card in ToDo può far scattare AVAILABLE_CARD
     if (testaToDo && utentiConnessi - num_carte_assegnate > 1) {
@@ -969,13 +969,13 @@ void gestisci_hello(utente_des_t*utente) {
     uint32_t porta = ntohl(net_porta);
     if (porta < 5679 || porta > 65535) {
         printf("HELLO con porta non valida (%u), connessione chiusa.\n", porta);
-        send(utente->des, "NO", 2, 0);
+        (void)send(utente->des, "NO", 2, 0);
         rimuovi_utente(utente);
         return;
     }
     if (trova_utente((utente_t)porta, NULL) != NULL) {
         printf("HELLO con porta %u già registrata, connessione chiusa.\n", porta);
-        send(utente->des, "NO", 2, 0);
+        (void)send(utente->des, "NO", 2, 0);
         rimuovi_utente(utente);
         return;
     }
@@ -986,7 +986,7 @@ void gestisci_hello(utente_des_t*utente) {
     if (DEBUG) {
         printf("accettazione utente %u\n", utente->utente);
     }
-    send(utente->des, "OK", 2, 0);
+    (void)send(utente->des, "OK", 2, 0);
     STAMPA_UTENTI();
 
     // Spec (matricola pari): con almeno due utenti registrati si offre la

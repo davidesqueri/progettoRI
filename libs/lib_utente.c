@@ -75,7 +75,7 @@ void QUIT () {
     // rimette in ToDo le mie card in Doing per riassegnarle), poi chiudo
     if (connesso) {
         uint32_t msg = htonl(ID_QUIT);
-        send(mysock_utente, &msg, sizeof(msg), 0);
+        (void)send(mysock_utente, &msg, sizeof(msg), 0);
     }
     close(mysock_utente); // invia FIN alla lavagna
     exit(0);
@@ -219,6 +219,34 @@ void CREATE_CARD() {
     }
 
     free(buf);
+
+    if (colonna==1) {
+        // devo lavorare alla card
+        int tempo_lavoro = 1 + rando()%100;
+        printf("Durata Lavoro Card: %i secondi\n", tempo_lavoro);
+        printf("Lavorando sulla carta...\n");
+
+        for (int i = tempo_lavoro; i > 0; i--) {
+            // controlla ping lavagna
+            // 1. controllo se ci siano messaggi dalla lavagna
+            char peek[16];
+            ssize_t bytes = recv(mysock_utente, (void*)peek, 1, MSG_PEEK | MSG_DONTWAIT);
+            if (bytes > 0) {
+                // gestisco il messaggio della lavagna
+                gestisci_messaggio_lavagna();
+            }
+            else if (bytes == 0) {
+                printf("\nLa lavagna ha chiuso la connessione, disconnessione...\n");
+                QUIT();
+            }
+            // torno a gestire la card
+            printf("\rTempo rimanente: %3d secondi",i);
+            fflush(stdout);
+            sleep(1);
+        }
+        CARD_DONE(card);
+        printf("\rLavoro terminato!             \n");
+    }
 }
 
 void CHOOSE_USER(card_t*card) {
@@ -253,7 +281,7 @@ void CHOOSE_USER(card_t*card) {
 
         // Pacchetto: [ID_CARD, MIO_PORT, MIO_COSTO]
         uint32_t pkt[3] = { htonl(card->ID), htonl((uint32_t)my_port), htonl(costo) };
-        sendto(mysock_udp, pkt, sizeof(pkt), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
+        (void)sendto(mysock_udp, pkt, sizeof(pkt), 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
     }
     if (DEBUG) {
         printf("Inviato il mio costo a tutti gli altri utenti.\n");
