@@ -519,6 +519,7 @@ void crea_card(utente_des_t*utente) {
     }
     else if (colonna == 2) {
         dest = &testaDone;
+        new_card->responsabile = utente->utente;
     }
     inserimento_lista_card(dest, new_card);
     if (DEBUG) {

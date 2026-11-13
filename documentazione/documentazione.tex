@@ -61,7 +61,11 @@ senza PONG entro 30s la card torna in \texttt{ToDo} (queste costanti sono defini
 Un utente che sta eseguendo una card si sveglia periodicamente (ogni secondo) per controllare l'arrivo di eventuali \texttt{PING\_USER} a cui rispondere e per aggiornare il tempo rimanente mostrato a video.
 Questa implementazione però richiede alla Lavagna un controllo O(n) su tutte le card in \texttt{Doing} ad ogni ciclo.
 
+L'intervallo di tempo necessario per completare una card è [1 ; 100] secondi: possono sembrare lunghi, ma serve che qualche card richieda più di 90 secondi, altrimenti non è verificabile il funzionamento di \texttt{PING\_USER}/\texttt{PONG\_LAVAGNA}.
+
 \section*{Scelte Varie}
+La Lavagna tiene traccia di utenti e card tramite liste, ciò non impone limiti superiori espliciti al numero, al prezzo di una minore leggibilità del codice e una maggiore complessità.
+
 Ho optato per non rendere bloccante l'assegnazione di una card: l'asta UDP ha timeout di 10s e ignora i pacchetti delle aste precedenti, cos\`i un utente che esce a met\`a asta non blocca gli altri.
 
 Ogni pacchetto \texttt{CHOOSE\_USER} porta l'ID della card in asta: un pacchetto di un'asta precedente, arrivato in ritardo, viene riconosciuto e scartato senza contaminare il conteggio dei costi dell'asta corrente.
@@ -74,8 +78,6 @@ Utenti già impegnati con una card in \texttt{Doing} non partecipano alle aste: 
 
 Durante la digitazione dei campi di una \texttt{CREATE\_CARD} l'utente notifica alla lavagna di essere temporaneamente occupato (\texttt{ID\_BUSY}/\texttt{ID\_IDLE}): finché sta inserendo i dati non viene incluso nelle liste dei peer per l'asta, che altrimenti attenderebbe inutilmente il suo voto fino al timeout. Al termine dell'inserimento torna disponibile per le aste successive.
 Questo mi è sembrato l'unico modo per garantire che ogni utente abbia al più una card assegnata (altrimenti cosa succederebbe se durante la creazione di una card un utente partecipasse a un'asta, vincesse, e infine la card della \texttt{CREATE\_CARD} venisse assegnata alla colonna \texttt{Doing}? L'utente si ritroverebbe con due card in \texttt{Doing}), al prezzo di divergere dalle specifiche, che indicano che all'asta debbano partecipare tutti gli utenti disponibili.
-
-L'intervallo di tempo necessario per completare una card è [1 ; 100] secondi: possono sembrare lunghi, ma serve che qualche card richieda più di 90 secondi, altrimenti non è verificabile il funzionamento di \texttt{PING\_USER}/\texttt{PONG\_LAVAGNA}.
 
 Se durante una \texttt{CHOOSE\_USER} restano meno di due utenti idonei, la lavagna rimette la card in \texttt{ToDo} e l'utente superstite, non avendo ricevuto alcun costo, abortisce l'asta: la card non viene assegnata all'unico utente rimasto connesso.
 

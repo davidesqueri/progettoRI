@@ -60,4 +60,4 @@ documentazione: documentazione/documentazione.tex
 	cd documentazione && pdflatex documentazione.tex && mv documentazione.pdf ./pdfoutput/ && cd ..
 
 clean:
-	rm -rf $(OBJPATH)/* $(LAVAGNA_EXECUTABLE_NAME) $(UTENTE_EXECUTABLE_NAME)
+	rm -rf $(OBJPATH)/* $(LAVAGNA_EXECUTABLE_NAME) $(UTENTE_EXECUTABLE_NAME) documentazione/documentazione.aux documentazione/documentazione.log
